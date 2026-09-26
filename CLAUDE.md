@@ -1,6 +1,6 @@
-# Maison d'habillement — notes pour les sessions de développement
+# FANCK ARNAULT — notes pour les sessions de développement
 
-Site vitrine + catalogue d'une marque de prêt-à-porter. Les commandes se finalisent **sur WhatsApp** (pas de paiement en ligne). Toute l'interface et les messages sont **en français**.
+Site vitrine + catalogue de la maison de prêt-à-porter **FANCK ARNAULT**. Le nom vient d'une seule source : `APP_NAME` dans le `.env` (côté front : `resources/js/lib/brand.js`, via `VITE_APP_NAME`). Les commandes se finalisent **sur WhatsApp** (pas de paiement en ligne). Toute l'interface et les messages sont **en français**.
 
 Installation, hébergement et réglages : voir `README.md`.
 

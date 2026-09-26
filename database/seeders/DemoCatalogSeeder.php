@@ -105,7 +105,7 @@ class DemoCatalogSeeder extends Seeder
                 'category_id' => $leaves[$categoryName]->id,
                 'collection_id' => $collectionIndex !== null ? $collections[$collectionIndex]->id : null,
                 'name' => $name,
-                'reference' => 'MH-'.str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
+                'reference' => 'FA-'.str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
                 'description' => "{$name} : pièce confectionnée dans notre atelier.\nMatière douce, finitions soignées.\nEntretien : lavage à 30 °C.",
                 'price' => $price,
                 'is_published' => true,

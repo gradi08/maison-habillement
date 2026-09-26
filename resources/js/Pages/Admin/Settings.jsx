@@ -6,7 +6,7 @@ import { buildWhatsAppMessage, buildWhatsAppUrl } from '@/lib/whatsapp';
 
 const SAMPLE = {
     product: 'Robe longue Amani',
-    reference: 'MH-0001',
+    reference: 'FA-0001',
     size: 'M',
     color: 'Beige sable',
     url: `${window.location.origin}/produits/robe-longue-amani`,

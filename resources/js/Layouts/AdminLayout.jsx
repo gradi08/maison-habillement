@@ -2,8 +2,7 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { Nav, Offcanvas } from 'react-bootstrap';
 import FlashToasts from '@/Components/FlashToasts';
-
-const appName = import.meta.env.VITE_APP_NAME || "Maison d'habillement";
+import { APP_NAME as appName } from '@/lib/brand';
 
 const NAV = [
     { route: 'admin.dashboard', match: 'admin.dashboard', icon: 'bi-speedometer2', label: 'Tableau de bord' },
@@ -29,10 +28,10 @@ export default function AdminLayout({ title, actions = null, children }) {
                 aria-labelledby="admin-menu-title"
             >
                 <Offcanvas.Header closeButton closeVariant="white">
-                    <Offcanvas.Title id="admin-menu-title">{appName}</Offcanvas.Title>
+                    <Offcanvas.Title id="admin-menu-title" className="brand-gold on-dark">{appName}</Offcanvas.Title>
                 </Offcanvas.Header>
                 <Offcanvas.Body className="d-flex flex-column p-3 w-100">
-                    <div className="d-none d-lg-block display-font fs-4 text-white px-2 mb-4">{appName}</div>
+                    <div className="d-none d-lg-block brand-gold on-dark fs-4 px-2 mb-4">{appName}</div>
                     <Nav className="flex-column gap-1" as="ul">
                         {NAV.map((item) => (
                             <Nav.Item as="li" key={item.route}>

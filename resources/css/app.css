@@ -7,6 +7,11 @@
     --brand-accent: #b5643c;
     --brand-accent-dark: #8f4b2a;
     --brand-line: #e3dbcf;
+    /* Or de la marque : foncé sur fond clair (contraste ≥ 3:1, texte de grande taille), lumineux sur fond sombre */
+    --brand-gold: #9a7424;
+    --brand-gold-gradient: linear-gradient(100deg, #7d5f1a 0%, #b08a36 45%, #8c6b22 55%, #7d5f1a 100%);
+    --brand-gold-light: #d9b45a;
+    --brand-gold-light-gradient: linear-gradient(100deg, #c9a24a 0%, #f1d58a 45%, #d4ae55 55%, #c9a24a 100%);
     --font-display: 'Cormorant Garamond', Georgia, serif;
     --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
@@ -32,6 +37,26 @@ h1, h2, h3, .display-font {
 }
 
 .text-muted-brand { color: var(--brand-muted) !important; }
+
+/* Nom de la marque en doré */
+.brand-gold {
+    color: var(--brand-gold);
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+}
+.brand-gold.on-dark { color: var(--brand-gold-light); }
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+    .brand-gold {
+        background-image: var(--brand-gold-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .brand-gold.on-dark { background-image: var(--brand-gold-light-gradient); }
+}
+.brand-gold:hover, .brand-gold:focus { filter: brightness(1.1); }
 /* Permet à un enfant flex de rétrécir (sinon text-truncate ne tronque pas et la page déborde). */
 .min-w-0 { min-width: 0; }
 .bg-sand { background: var(--brand-sand); }
