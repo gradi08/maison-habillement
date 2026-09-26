@@ -1,4 +1,4 @@
-# FANCK ARNAULT — site vitrine & catalogue
+# FRANCK ARNAULT — site vitrine & catalogue
 
 Laravel 13 · Inertia.js 2 · React · MySQL 8 · commandes finalisées via WhatsApp.
 
