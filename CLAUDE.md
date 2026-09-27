@@ -3,6 +3,7 @@
 Site vitrine + catalogue de la maison de prêt-à-porter **FRANCK ARNAULT**. Le nom vient d'une seule source : `APP_NAME` dans le `.env` (côté front : `resources/js/lib/brand.js`, via `VITE_APP_NAME`). Les commandes se finalisent **sur WhatsApp** (pas de paiement en ligne). Toute l'interface et les messages sont **en français**.
 
 Installation et réglages : `README.md`. Mise en ligne : `docs/HEBERGEMENT-ALWAYSDATA.md` (scripts `scripts/package.ps1` sur le PC, `scripts/deploy.sh` sur le serveur).
+Guide utilisateur de l'admin (ajout d'articles) : `docs/GUIDE-AJOUT-ARTICLES.md` — à mettre à jour si les libellés ou le comportement du formulaire produit changent.
 
 ## Stack
 

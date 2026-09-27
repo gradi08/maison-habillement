@@ -90,6 +90,14 @@ Par défaut les tests tournent sur SQLite en mémoire. Pour les lancer sur MySQL
 DB_CONNECTION=mysql DB_DATABASE=maison_habillement_test php artisan test
 ```
 
+## Documentation
+
+| Document | Contenu |
+|---|---|
+| [docs/GUIDE-AJOUT-ARTICLES.md](docs/GUIDE-AJOUT-ARTICLES.md) | Ajouter et gérer les articles dans l'admin, champ par champ, avec la raison de chaque action |
+| [docs/CATALOGUE.md](docs/CATALOGUE.md) | Catalogue de départ (3 catégories, 2 collections, 12 articles) et commande d'import |
+| [docs/HEBERGEMENT-ALWAYSDATA.md](docs/HEBERGEMENT-ALWAYSDATA.md) | Mise en ligne et mises à jour sur alwaysdata |
+
 ## Réglages (table `settings`, page Admin › Réglages)
 
 | Clé | Rôle |
