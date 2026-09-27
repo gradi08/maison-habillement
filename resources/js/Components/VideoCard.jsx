@@ -1,16 +1,23 @@
 import { Link } from '@inertiajs/react';
+import { formatDuration } from '@/lib/videoUpload';
 
 /** Vignette d'une vidéo dans la liste. Même format (portrait) pour toutes, afin d'aligner la grille. */
 export default function VideoCard({ video }) {
+    // Seules les miniatures YouTube des vidéos verticales ont des bandes noires à masquer (zoom CSS).
+    const youtubeVertical = video.source !== 'file' && video.is_vertical;
+
     return (
         <Link href={video.url} className="video-card">
-            <div className={`thumb ratio-portrait mb-2${video.is_vertical ? ' vertical' : ''}`}>
-                <img src={video.thumbnail_url} alt="" loading="lazy" />
+            <div className={`thumb ratio-portrait mb-2${youtubeVertical ? ' vertical' : ''}`}>
+                {video.thumbnail_url && <img src={video.thumbnail_url} alt="" loading="lazy" />}
                 <span className="video-play" aria-hidden="true">
                     <i className="bi bi-play-fill" />
                 </span>
                 {video.is_vertical && (
                     <span className="format badge text-bg-dark"><i className="bi bi-phone me-1" />Court</span>
+                )}
+                {video.duration > 0 && (
+                    <span className="badge text-bg-dark position-absolute bottom-0 end-0 m-2">{formatDuration(video.duration)}</span>
                 )}
             </div>
             <div className="fw-medium">{video.title}</div>

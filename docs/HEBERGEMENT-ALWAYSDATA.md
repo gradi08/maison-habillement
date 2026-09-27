@@ -298,3 +298,71 @@ Pendant la mise à jour, le site affiche une page de maintenance pendant quelque
 
 **Ne jamais** passer `APP_DEBUG=true` sur le site en ligne, même pour chercher une erreur : les pages d'erreur afficheraient
 tes mots de passe à n'importe quel visiteur. Utilise le fichier `storage/logs/laravel.log` à la place.
+
+---
+
+## Changer d'hébergeur plus tard (plus d'espace pour les vidéos)
+
+Le site ne dépend d'aucun hébergeur : l'envoi des vidéos par morceaux et la réduction des photos fonctionnent partout.
+Il faut simplement **déménager trois choses** : la base de données, les fichiers envoyés (photos, vidéos), et la clé de l'application.
+
+### Ce que doit proposer le nouvel hébergeur
+
+| Besoin | Pourquoi |
+|---|---|
+| PHP **8.3 ou plus**, avec `pdo_mysql`, `mbstring`, `fileinfo`, `openssl` | Exigé par Laravel 13. `fileinfo` sert à vérifier que les fichiers envoyés sont bien des images et des vidéos. |
+| MySQL 8 ou MariaDB 10.6+, moteur **InnoDB** | Les liens entre articles, catégories et photos reposent sur des clés étrangères. |
+| **Accès SSH** avec Composer | Pour lancer `scripts/deploy.sh`, comme sur alwaysdata. |
+| Pouvoir faire pointer le site sur le dossier **`public/`** | Sécurité : le `.env` ne doit jamais être accessible depuis internet. |
+| **Espace disque** : compter **5 à 10 Go** pour des vidéos | Une vidéo de 30 s en 1080p pèse 10 à 20 Mo : 5 Go permettent environ 300 vidéos. |
+
+Aucune exigence sur la taille maximale d'envoi : les vidéos partent par morceaux, qui rapetissent tout seuls si le serveur les refuse.
+
+### Étapes du déménagement
+
+1. **Mettre l'ancien site en maintenance** (SSH, ancien serveur), pour que rien ne change pendant la copie :
+   ```bash
+   cd ~/franck-arnault && php artisan down
+   ```
+
+2. **Exporter la base de données** (SSH, ancien serveur) :
+   ```bash
+   mysqldump -h mysql-COMPTE.alwaysdata.net -u UTILISATEUR -p COMPTE_franck > ~/franck-base.sql
+   ```
+   Ou depuis phpMyAdmin (<https://phpmyadmin.alwaysdata.com>) : base → **Exporter** → **Exécuter**.
+
+3. **Récupérer les fichiers envoyés** (photos, vidéos, couvertures) : c'est le dossier `storage/app/public`.
+   Sur ton PC (PowerShell) :
+   ```powershell
+   scp -r COMPTE@ssh-COMPTE.alwaysdata.net:~/franck-arnault/storage/app/public ./sauvegarde-fichiers
+   scp COMPTE@ssh-COMPTE.alwaysdata.net:~/franck-base.sql ./
+   ```
+
+4. **Noter la clé de l'application** : la ligne `APP_KEY=base64:…` du `.env` de l'ancien serveur.
+   → **Pourquoi** : elle chiffre les sessions et les données protégées. En la gardant, rien n'est perdu au déménagement. Ne la partage avec personne.
+
+5. **Installer le site chez le nouvel hébergeur** : mêmes étapes que ce guide (5 à 9), avec le nouveau serveur, **mais** :
+   - dans le `.env`, colle l'**ancienne** `APP_KEY` ;
+   - adapte `APP_URL`, `DB_HOST`, `DB_DATABASE`, `DB_USERNAME` et `DB_PASSWORD` ;
+   - augmente **`VIDEO_MAX_MB`** (par exemple `300`) pour profiter de l'espace ;
+   - lance `bash scripts/deploy.sh`, **sans** `--premiere-installation` : le compte admin est dans la base que tu vas importer.
+
+6. **Importer la base** dans la nouvelle base vide (SSH, nouveau serveur) :
+   ```bash
+   mysql -h SERVEUR-BASE -u UTILISATEUR -p NOM-BASE < ~/franck-base.sql
+   ```
+
+7. **Remettre les fichiers** dans `storage/app/public` du nouveau serveur :
+   ```powershell
+   scp -r ./sauvegarde-fichiers/* UTILISATEUR@SERVEUR-SSH:~/franck-arnault/storage/app/public/
+   ```
+   Puis, sur le nouveau serveur :
+   ```bash
+   cd ~/franck-arnault && php artisan storage:link && php artisan optimize
+   ```
+
+8. **Vérifier** : accueil, une fiche produit (photos), la page Vidéos (lecture d'une vidéo), puis la connexion à l'admin.
+
+9. **Changer l'adresse** : si tu utilises un nom de domaine, fais-le pointer vers le nouvel hébergeur. Garde l'ancien site en maintenance quelques jours, puis supprime-le.
+
+→ **Pourquoi cet ordre** : la maintenance empêche d'ajouter un article sur l'ancien site pendant la copie, où il serait perdu. Garder la même `APP_KEY` et importer la base avant de vérifier permet de retrouver exactement le même site, avec le même compte admin.

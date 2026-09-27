@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { Badge, Table } from 'react-bootstrap';
 import DeleteButton from '@/Components/Admin/DeleteButton';
 import AdminLayout from '@/Layouts/AdminLayout';
+import { formatMb } from '@/lib/imageCompress';
 
 export default function VideosIndex({ videos }) {
     return (
@@ -18,8 +19,8 @@ export default function VideosIndex({ videos }) {
                     <div className="p-4 text-muted-brand">
                         <p className="mb-2">Aucune vidéo pour le moment.</p>
                         <p className="small mb-0">
-                            Publiez d'abord la vidéo sur YouTube (un Short convient très bien), puis cliquez sur
-                            « Nouvelle vidéo » et collez son lien.
+                            Cliquez sur « Nouvelle vidéo » : vous pourrez envoyer le fichier de la vidéo, ou coller le lien
+                            d'une vidéo YouTube.
                         </p>
                     </div>
                 ) : (
@@ -38,12 +39,16 @@ export default function VideosIndex({ videos }) {
                                 {videos.map((v) => (
                                     <tr key={v.id}>
                                         <td>
-                                            <img src={v.thumbnail_url} alt="" className="rounded" style={{ width: '5rem', height: '2.8rem', objectFit: 'cover' }} loading="lazy" />
+                                            {v.thumbnail_url ? (
+                                                <img src={v.thumbnail_url} alt="" className="rounded" style={{ width: '5rem', height: '2.8rem', objectFit: 'cover' }} loading="lazy" />
+                                            ) : (
+                                                <div className="rounded bg-dark text-white d-grid" style={{ width: '5rem', height: '2.8rem', placeItems: 'center' }}><i className="bi bi-camera-video" /></div>
+                                            )}
                                         </td>
                                         <td>
                                             <Link href={route('admin.videos.edit', v.id)} className="fw-medium link-body-emphasis">{v.title}</Link>
                                             <div className="small text-muted-brand">
-                                                {[v.is_vertical ? 'Format vertical' : 'Format horizontal', v.category_name, v.collection_name && `Collection ${v.collection_name}`]
+                                                {[v.source === 'file' ? `Fichier${v.file_size ? ` · ${formatMb(v.file_size)}` : ''}` : 'YouTube', v.is_vertical ? 'vertical' : 'horizontal', v.category_name, v.collection_name && `Collection ${v.collection_name}`]
                                                     .filter(Boolean).join(' · ')}
                                             </div>
                                         </td>
@@ -68,7 +73,7 @@ export default function VideosIndex({ videos }) {
                                                 href={route('admin.videos.destroy', v.id)}
                                                 aria-label={`Retirer ${v.title}`}
                                                 title={`Retirer « ${v.title} » du site ?`}
-                                                message="La vidéo n'apparaîtra plus sur le site. Elle reste sur votre chaîne YouTube."
+                                                message={v.source === 'file' ? "Le fichier vidéo et son image d'aperçu seront supprimés définitivement du serveur." : "La vidéo n'apparaîtra plus sur le site. Elle reste sur votre chaîne YouTube."}
                                                 confirmLabel="Retirer"
                                             />
                                         </td>

@@ -9,19 +9,34 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Storage;
 
 /**
- * Vidéo de présentation hébergée sur YouTube. Seul l'identifiant (11 caractères) est stocké.
+ * Vidéo de présentation. Deux sources possibles :
+ *  - `youtube` : seul l'identifiant YouTube (11 caractères) est stocké ;
+ *  - `file`    : fichier envoyé sur le site (disque `public`, dossier videos/{id}/), avec son image d'aperçu.
  */
 class Video extends Model
 {
     use HasFactory, HasSlug;
 
+    public const SOURCE_YOUTUBE = 'youtube';
+
+    public const SOURCE_FILE = 'file';
+
+    public const DISK = 'public';
+
     protected $fillable = [
         'title',
         'slug',
         'description',
+        'source',
         'youtube_id',
+        'file_path',
+        'file_mime',
+        'file_size',
+        'poster_path',
+        'duration',
         'is_vertical',
         'category_id',
         'collection_id',
@@ -37,7 +52,26 @@ class Video extends Model
             'is_published' => 'boolean',
             'published_at' => 'datetime',
             'position' => 'integer',
+            'file_size' => 'integer',
+            'duration' => 'integer',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        // Les fichiers (vidéo + aperçu) sont supprimés avec la vidéo.
+        static::deleted(fn (Video $video) => Storage::disk(self::DISK)->deleteDirectory($video->storageDirectory()));
+    }
+
+    public function isFile(): bool
+    {
+        return $this->source === self::SOURCE_FILE;
+    }
+
+    /** Dossier des fichiers de cette vidéo sur le disque public. */
+    public function storageDirectory(): string
+    {
+        return "videos/{$this->id}";
     }
 
     public function slugSource(): string
@@ -90,26 +124,44 @@ class Video extends Model
                 ->where('slug', $slug)));
     }
 
-    /* ---------------------------------------------------------------- YouTube */
+    /* ------------------------------------------------------- Adresses (URL) */
 
+    /** Image d'aperçu : celle envoyée pour un fichier, la miniature YouTube sinon. */
     protected function thumbnailUrl(): Attribute
     {
-        // hqdefault existe pour toutes les vidéos (maxresdefault n'est pas garanti).
-        return Attribute::get(fn () => "https://i.ytimg.com/vi/{$this->youtube_id}/hqdefault.jpg");
+        return Attribute::get(function () {
+            if ($this->isFile()) {
+                return $this->poster_path ? Storage::disk(self::DISK)->url($this->poster_path) : null;
+            }
+
+            // hqdefault existe pour toutes les vidéos YouTube (maxresdefault n'est pas garanti).
+            return $this->youtube_id ? "https://i.ytimg.com/vi/{$this->youtube_id}/hqdefault.jpg" : null;
+        });
+    }
+
+    /** Fichier vidéo lisible directement par le navigateur (source `file`). */
+    protected function fileUrl(): Attribute
+    {
+        return Attribute::get(fn () => $this->isFile() && $this->file_path
+            ? Storage::disk(self::DISK)->url($this->file_path)
+            : null);
     }
 
     protected function embedUrl(): Attribute
     {
         // youtube-nocookie : pas de cookie publicitaire tant que la vidéo n'est pas lue.
-        return Attribute::get(fn () => "https://www.youtube-nocookie.com/embed/{$this->youtube_id}"
-            .'?autoplay=1&rel=0&playsinline=1&modestbranding=1');
+        return Attribute::get(fn () => ! $this->isFile() && $this->youtube_id
+            ? "https://www.youtube-nocookie.com/embed/{$this->youtube_id}?autoplay=1&rel=0&playsinline=1&modestbranding=1"
+            : null);
     }
 
     protected function youtubeUrl(): Attribute
     {
-        return Attribute::get(fn () => $this->is_vertical
-            ? "https://www.youtube.com/shorts/{$this->youtube_id}"
-            : "https://www.youtube.com/watch?v={$this->youtube_id}");
+        return Attribute::get(fn () => match (true) {
+            $this->isFile() || ! $this->youtube_id => null,
+            $this->is_vertical => "https://www.youtube.com/shorts/{$this->youtube_id}",
+            default => "https://www.youtube.com/watch?v={$this->youtube_id}",
+        });
     }
 
     /**

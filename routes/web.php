@@ -42,6 +42,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('categories', Admin\CategoryController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('collections', Admin\CollectionController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('videos', Admin\VideoController::class)->except('show');
+    // Envoi des fichiers vidéo en plusieurs morceaux (Axios)
+    Route::post('video-uploads', [Admin\VideoUploadController::class, 'start'])->name('video-uploads.start');
+    Route::put('video-uploads/{upload}', [Admin\VideoUploadController::class, 'chunk'])->name('video-uploads.chunk');
 
     Route::get('settings', [Admin\SettingController::class, 'edit'])->name('settings.edit');
     Route::put('settings', [Admin\SettingController::class, 'update'])->name('settings.update');

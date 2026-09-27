@@ -313,9 +313,18 @@ Dans **Produits**, la barre **Rechercher par nom ou référence** filtre la list
 
 Le menu **Vidéos** du site montre de courtes vidéos où la boutique présente ses vêtements. Les visiteurs peuvent les **filtrer** par catégorie ou collection, lire leur **description**, et ouvrir directement les **articles présentés**. Chaque vidéo apparaît aussi sur la fiche des articles qu'elle montre, dans une section « En vidéo ».
 
-> **Pourquoi les vidéos sont sur YouTube et pas sur le site** : une vidéo de 30 secondes pèse 10 à 30 Mo. L'hébergement gratuit n'a que 100 Mo en tout, et refuse les envois de plus de quelques Mo.
-> YouTube héberge gratuitement et sans limite, et adapte la qualité à la connexion de chaque visiteur (4G, wifi…).
-> Sur le site, le lecteur YouTube ne se charge **qu'au clic** : la page reste rapide et rien n'est envoyé à YouTube tant que le visiteur ne lance pas la vidéo.
+**Deux façons d'ajouter une vidéo** (au choix, pour chaque vidéo) :
+
+| | **Fichier vidéo** (envoyé sur le site) | **Lien YouTube** |
+|---|---|---|
+| Où est la vidéo | Sur ton hébergement | Sur ta chaîne YouTube |
+| Avantages | Pas de logo YouTube ni de vidéos suggérées à la fin : le visiteur reste chez toi. Rien à publier ailleurs. | Gratuit et sans limite d'espace. La qualité s'adapte à la connexion de chaque visiteur. |
+| Limite | Occupe de l'espace : une vidéo de 30 s pèse environ 10 à 20 Mo. Taille maximale réglée par `VIDEO_MAX_MB` (50 Mo par défaut). | Il faut d'abord publier la vidéo sur YouTube. |
+| Quand l'utiliser | Dès que l'hébergement a de la place (après le changement d'hébergeur) | Avec l'hébergement gratuit de 100 Mo, ou pour de longues vidéos |
+
+→ **Pourquoi deux options** : l'hébergement actuel (100 Mo) ne peut contenir que quelques vidéos. Le système d'envoi de fichiers est déjà prêt et fonctionne chez n'importe quel hébergeur. Il suffira d'augmenter la limite en changeant d'hébergeur.
+
+Dans les deux cas, la vidéo ne se charge **qu'au clic** du visiteur : la page reste rapide.
 
 ### 8.1 Tourner la vidéo
 
@@ -327,7 +336,17 @@ Le menu **Vidéos** du site montre de courtes vidéos où la boutique présente 
 | Montre ce qu'une photo ne montre pas | Le tissu qui bouge, la démarche, un tour sur soi, un gros plan sur la matière. C'est la raison d'être de la vidéo. |
 | Musique : uniquement celle de la **bibliothèque audio YouTube** | Une musique commerciale peut faire bloquer la vidéo, ou empêcher son affichage sur les autres sites, dont le tien. |
 
-### 8.2 Publier la vidéo sur YouTube
+### 8.2 Préparer la vidéo
+
+**Option « Fichier vidéo »**
+
+| Conseil | Pourquoi |
+|---|---|
+| Format **MP4** (codec H.264), en **1080p** maximum | Le MP4 H.264 est lu par tous les navigateurs, sur téléphone comme sur ordinateur. Au-delà de 1080p, le fichier grossit beaucoup sans différence visible sur un téléphone. |
+| Sur **iPhone** : Réglages › Appareil photo › Formats › **« Le plus compatible »** | Sinon l'iPhone enregistre en HEVC, que Chrome et Firefox lisent mal. Le site te préviendra s'il ne peut pas lire la vidéo. |
+| Garde la vidéo **courte** (15 à 60 s) | Chaque seconde compte dans l'espace de l'hébergement et le temps de chargement pour le visiteur. |
+
+**Option « Lien YouTube »** : publie d'abord la vidéo sur YouTube :
 
 1. **Action** : sur l'application YouTube, bouton **+** → **Créer un Short**, ou **Importer une vidéo**.
 2. **Action** : choisis la visibilité **Publique**, ou **Non répertoriée**.
@@ -339,6 +358,24 @@ Le menu **Vidéos** du site montre de courtes vidéos où la boutique présente 
 ### 8.3 Ajouter la vidéo sur le site
 
 Menu **Vidéos** → bouton **Nouvelle vidéo**.
+
+**Source : « Fichier vidéo » ou « Lien YouTube »**
+**Action** : choisis l'onglet correspondant (« Fichier vidéo » est sélectionné par défaut).
+→ **Pourquoi** : voir le tableau au début de cette section. Tu peux changer plus tard. Passer d'un fichier à YouTube supprime le fichier du serveur, pour libérer la place.
+
+**Si « Fichier vidéo »**
+1. **Action** : clique sur **Choisir la vidéo**.
+   → **Pourquoi** : le site vérifie aussitôt le format et la taille. Une vidéo trop lourde ou d'un format non accepté est refusée **avant** l'envoi, avec la raison.
+2. **Action** : **n'attends pas** : pendant l'envoi (barre de progression), remplis le titre, la description et le reste.
+   → **Pourquoi** : la vidéo part en petits morceaux, l'un après l'autre. Si la connexion coupe, l'envoi reprend tout seul là où il s'était arrêté. C'est aussi ce qui permet d'envoyer de grosses vidéos malgré les limites du serveur.
+3. **Action** : vérifie l'**image d'aperçu**, prise automatiquement dans la vidéo, et le **format vertical**, détecté automatiquement. Si l'image ne te plaît pas, clique sur **Choisir l'image d'aperçu** et envoie une photo (elle est optimisée automatiquement).
+   → **Pourquoi** : c'est l'image que voient les visiteurs sur la vignette et avant de lancer la lecture. Une belle image donne envie de cliquer.
+4. **Action** : attends « ✓ Vidéo envoyée » avant d'enregistrer. Le bouton reste grisé tant que l'envoi n'est pas terminé.
+   → **Pourquoi** : enregistrer avant la fin laisserait une vidéo incomplète.
+
+Un message jaune « Ce navigateur ne sait pas lire cette vidéo » signifie que le fichier risque de ne pas être lisible par tous les visiteurs (souvent une vidéo d'iPhone en HEVC). Mieux vaut l'exporter en MP4 H.264, ou utiliser YouTube pour celle-là.
+
+**Si « Lien YouTube »**
 
 **Lien YouTube \***
 **Action** : colle le lien copié à l'étape précédente.
@@ -379,14 +416,17 @@ Menu **Vidéos** → bouton **Nouvelle vidéo**.
 - **Ordre d'affichage** : `0` = en premier. À égalité, les plus récentes passent devant.
   → **Pourquoi** : pour épingler en tête la vidéo phare, sans qu'elle soit dépassée par les suivantes.
 
-**Action** : clique sur **Ajouter la vidéo**. Le bouton reste grisé tant que le lien YouTube n'est pas reconnu.
+**Action** : clique sur **Ajouter la vidéo**. Le bouton reste grisé tant que le lien YouTube n'est pas reconnu, ou que l'envoi du fichier n'est pas terminé.
 
 ### 8.4 Vérifier et gérer
 
 - **Voir sur le site** (en haut de la page de modification) : lance la vidéo, vérifie le format, la description et les articles présentés.
 - La liste **Vidéos** de l'admin affiche l'état de chaque vidéo : **En ligne**, **Brouillon**, ou **Programmée**. Survole ce dernier badge pour voir la date.
-- **Retirer la vidéo du site** : confirme dans la fenêtre. La vidéo disparaît du site, mais **reste sur ta chaîne YouTube**.
-  → **Pourquoi** : le site ne fait qu'afficher la vidéo, il ne la possède pas. Pour la supprimer définitivement, fais-le aussi dans YouTube Studio.
+- La liste indique aussi la **source** (Fichier ou YouTube) et le **poids** de chaque fichier : pratique pour surveiller l'espace utilisé.
+- **Remplacer la vidéo** (fichier) : sur la page de modification, bouton **Remplacer la vidéo**. L'ancien fichier est supprimé du serveur à l'enregistrement.
+- **Retirer la vidéo du site** : confirme dans la fenêtre.
+  - **Fichier vidéo** : le fichier et son image d'aperçu sont **supprimés définitivement** du serveur.
+  - **YouTube** : la vidéo disparaît du site mais **reste sur ta chaîne**. Le site ne fait que l'afficher : pour la supprimer, fais-le aussi dans YouTube Studio.
 
 ---
 
@@ -427,6 +467,11 @@ Menu **Vidéos** → bouton **Nouvelle vidéo**.
 | Le bloc « Coups de cœur » de l'accueil est vide | Aucun article mis en avant | Coche « Mettre en avant » sur 3 ou 4 articles |
 | « Lien non reconnu » sur une vidéo | Lien d'une autre plateforme, ou lien incomplet | Sur YouTube : **Partager** → **Copier le lien**, puis colle-le tel quel |
 | La vidéo affiche « Vidéo non disponible » sur le site | Vidéo en **Privée**, intégration désactivée, ou musique protégée | Section 8.2 : visibilité Publique ou Non répertoriée, « Autoriser l'intégration » activé, musique de la bibliothèque YouTube |
+| « La vidéo dépasse la taille maximale autorisée » | Fichier plus lourd que `VIDEO_MAX_MB` | Raccourcis-la ou exporte-la en 1080p ; ou utilise YouTube ; après changement d'hébergeur, augmente `VIDEO_MAX_MB` |
+| « Ce fichier n'est pas une vidéo MP4, WebM ou MOV » | Le contenu du fichier n'est pas une vidéo (même si son nom finit par .mp4) | Réexporte la vidéo en MP4 depuis ton téléphone ou ton logiciel de montage |
+| « Ce navigateur ne sait pas lire cette vidéo » (jaune) | Vidéo HEVC d'iPhone, ou codec rare | Exporte en MP4 H.264 (section 8.2), ou utilise YouTube |
+| « L'envoi a échoué » / « Envoi introuvable ou expiré » | Connexion perdue trop longtemps, ou envoi commencé il y a plus de 24 h | Clique sur **Réessayer / choisir une autre vidéo** |
+| Plus de place sur l'hébergement | Trop de fichiers vidéo | Supprime les anciennes vidéos (liste Vidéos, colonne poids), passe les longues sur YouTube, ou change d'hébergeur |
 | La vidéo a de grandes bandes noires | Réglage « Format vertical » incorrect | Coche ou décoche **Format vertical** selon le sens de la vidéo |
 | La vidéo programmée n'apparaît pas à l'heure prévue | Fuseau horaire du serveur différent du tien | Règle `APP_TIMEZONE` dans le `.env` du serveur, puis `php artisan optimize` |
 | La grande image de l'accueil est vide | Aucune collection mise en avant, ou collection sans image de couverture | Section 3 : coche « Mettre en avant sur l'accueil » et ajoute une couverture |

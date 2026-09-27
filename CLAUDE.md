@@ -2,7 +2,7 @@
 
 Site vitrine + catalogue de la maison de prêt-à-porter **FRANCK ARNAULT**. Le nom vient d'une seule source : `APP_NAME` dans le `.env` (côté front : `resources/js/lib/brand.js`, via `VITE_APP_NAME`). Les commandes se finalisent **sur WhatsApp** (pas de paiement en ligne). Toute l'interface et les messages sont **en français**.
 
-Installation et réglages : `README.md`. Mise en ligne : `docs/HEBERGEMENT-ALWAYSDATA.md` (scripts `scripts/package.ps1` sur le PC, `scripts/deploy.sh` sur le serveur).
+Installation et réglages : `README.md`. Mise en ligne et **changement d'hébergeur** : `docs/HEBERGEMENT-ALWAYSDATA.md` (scripts `scripts/package.ps1` sur le PC, `scripts/deploy.sh` sur le serveur).
 Guide utilisateur de l'admin (ajout d'articles) : `docs/GUIDE-AJOUT-ARTICLES.md` — à mettre à jour si les libellés ou le comportement du formulaire produit changent.
 
 ## Stack
@@ -16,7 +16,7 @@ Guide utilisateur de l'admin (ajout d'articles) : `docs/GUIDE-AJOUT-ARTICLES.md`
 ```bash
 php artisan serve --port=8010          # le port 8000 est pris par un autre projet (gmailauto)
 npm run dev                            # ou npm run build
-php artisan test                       # 95 tests, SQLite en mémoire
+php artisan test                       # 103 tests, SQLite en mémoire
 DB_CONNECTION=mysql DB_DATABASE=maison_habillement_test php artisan test   # mêmes tests sur MySQL
 php artisan migrate:fresh --seed       # ⚠ efface la base ; admin + catalogue de démo (APP_ENV=local)
 ```
@@ -31,7 +31,7 @@ php artisan migrate:fresh --seed       # ⚠ efface la base ; admin + catalogue 
 - `Category` : 2 niveaux maximum (`parent_id` doit être une racine) ; le filtre « Femme » inclut ses sous-catégories
 - `Setting` : clé/valeur mis en cache (`Setting::get/bool/set`), valeurs par défaut créées **dans la migration**
 - `users.role` : enum `UserRole` (admin / customer), **jamais** dans `$fillable`
-- `Video` : vidéo **YouTube** (seul `youtube_id` est stocké, jamais de fichier vidéo sur le serveur : quota 100 Mo). `belongsTo` Category/Collection (filtres, `nullOnDelete`), `belongsToMany` Product via `product_video` (colonne `position`). Scope `published()` = `is_published` + `published_at` passé (publication programmée, fuseau `APP_TIMEZONE`).
+- `Video` : deux sources (`source`) : `youtube` (seul `youtube_id` stocké) ou `file` (fichier sur le disque public dans `videos/{id}/`, + `poster_path`, `file_mime`, `file_size`, `duration`). `belongsTo` Category/Collection (filtres, `nullOnDelete`), `belongsToMany` Product via `product_video` (colonne `position`). Scope `published()` = `is_published` + `published_at` passé (publication programmée, fuseau `APP_TIMEZONE`). Fichiers supprimés via l'événement `Video::deleted` (dossier entier).
 
 ## Règles à ne pas casser
 
@@ -46,6 +46,8 @@ php artisan migrate:fresh --seed       # ⚠ efface la base ; admin + catalogue 
 - **Liens YouTube** : la règle qui fait foi est `Video::parseYoutube()` (PHP). `lib/youtube.js` en est la copie côté navigateur pour l'aperçu instantané : modifier les deux ensemble (tests dans `tests/Feature/VideoTest.php`).
 - **Lecteur vidéo « à la demande »** (`Components/VideoPlayer.jsx`) : seule la miniature est chargée ; l'iframe `youtube-nocookie.com` n'est créée qu'au clic. Ne pas intégrer d'iframe YouTube directement dans une page.
 - `HasSlug` fabrique le slug depuis `slugSource()` (`name` par défaut, `title` pour `Video`).
+- **Vidéos envoyées par morceaux** (`App\Support\ChunkedUpload`, `Admin\VideoUploadController`, `lib/videoUpload.js`) : chaque morceau est le **corps brut** d'une requête PUT (pas un fichier de formulaire), donc seule `post_max_size` s'applique, jamais `upload_max_filesize`. Taille des morceaux = min(`VIDEO_CHUNK_MB`, post_max_size − 64 Ko) ; le navigateur divise par deux sur une erreur 413 (Nginx). Reprise par `offset`. Type vérifié par **finfo sur le contenu assemblé** (`config/media.php`, `video_mimes`), jamais sur le nom. Taille max : `VIDEO_MAX_MB` (50 Mo par défaut, à augmenter chez un plus gros hébergeur). Parties en cours dans `storage/app/private/video-uploads`, purgées après 24 h.
+- `App\Support\PhpLimits` : lecture des limites PHP (partagé par `HandleInertiaRequests` et `ChunkedUpload`).
 
 ## Pièges connus
 
@@ -71,6 +73,7 @@ php artisan migrate:fresh --seed       # ⚠ efface la base ; admin + catalogue 
 | Axios + intercepteurs (messages d'erreur en français) | `lib/http.js` |
 | Réduction automatique des photos avant envoi | `lib/imageCompress.js` (utilisé par `ImageManager`, `Products/Form`, `Collections/Index`) |
 | Vidéos : lecteur, vignette, pages publiques, admin | `Components/VideoPlayer.jsx`, `Components/VideoCard.jsx`, `Pages/Videos/*`, `Pages/Admin/Videos/*`, `lib/youtube.js` |
+| Envoi de fichier vidéo (morceaux, aperçu auto, détection vertical) | `Components/Admin/VideoFileField.jsx`, `lib/videoUpload.js` |
 | Thème (variables CSS en tête) | `resources/css/app.css` |
 
 Conventions : pas de `window.confirm` (utiliser `useConfirm`), textes en français, `fetchPriority="high"` uniquement sur l'image LCP, `loading="lazy"` ailleurs.

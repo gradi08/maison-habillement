@@ -2,6 +2,7 @@ import { Link, useForm } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 import { Alert, Button, Form, InputGroup, Spinner } from 'react-bootstrap';
 import DeleteButton from '@/Components/Admin/DeleteButton';
+import VideoFileField from '@/Components/Admin/VideoFileField';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { parseYoutube, youtubeThumbnail } from '@/lib/youtube';
 
@@ -10,10 +11,15 @@ export default function VideoFormPage(props) {
     return <VideoForm key={props.video?.id ?? 'new'} {...props} />;
 }
 
-function VideoForm({ video, categories, collections, products, timezone }) {
+function VideoForm({ video, categories, collections, products, timezone, videoMaxMb }) {
     const isEdit = Boolean(video);
     const form = useForm({
+        // Nouvelle vidéo : fichier envoyé par défaut ; une vidéo existante garde sa source.
+        source: video?.source ?? 'file',
         youtube_url: video?.youtube_url ?? '',
+        upload_id: '',
+        poster: null,
+        duration: video?.duration ?? '',
         title: video?.title ?? '',
         slug: video?.slug ?? '',
         description: video?.description ?? '',
@@ -27,6 +33,9 @@ function VideoForm({ video, categories, collections, products, timezone }) {
     });
     const { data, setData, errors, processing } = form;
     const [search, setSearch] = useState('');
+    const [uploading, setUploading] = useState(false);
+    const isFile = data.source === 'file';
+    const hasFile = Boolean(data.upload_id) || Boolean(video?.file_url && video?.source === 'file');
 
     const parsed = parseYoutube(data.youtube_url);
 
@@ -56,9 +65,22 @@ function VideoForm({ video, categories, collections, products, timezone }) {
 
     const submit = (e) => {
         e.preventDefault();
-        const options = { preserveScroll: true, onSuccess: () => form.setDefaults() };
-        isEdit ? form.put(route('admin.videos.update', video.id), options) : form.post(route('admin.videos.store'), options);
+        // Toujours en multipart (image d'aperçu) : en modification, POST + _method=put, car PHP ne lit pas le multipart en PUT.
+        form.transform((d) => ({
+            ...d,
+            ...(isEdit ? { _method: 'put' } : {}),
+            poster: d.source === 'file' ? d.poster : null,
+        }));
+        form.post(isEdit ? route('admin.videos.update', video.id) : route('admin.videos.store'), {
+            preserveScroll: true,
+            forceFormData: true,
+            queryStringArrayFormat: 'indices',
+            // Le fichier et l'aperçu sont enregistrés : on ne les renverra pas au prochain enregistrement.
+            onSuccess: () => form.setData((d) => ({ ...d, upload_id: '', poster: null })),
+        });
     };
+
+    const canSubmit = isFile ? hasFile && !uploading : Boolean(parsed);
 
     const errorCount = Object.keys(errors).length;
 
@@ -80,7 +102,39 @@ function VideoForm({ video, categories, collections, products, timezone }) {
 
                 <div className="row g-4">
                     <div className="col-xl-8 d-grid gap-4 align-content-start">
-                        <Card title="Vidéo YouTube" subtitle="Publiez d'abord la vidéo sur YouTube (un Short convient très bien), puis collez ici son lien.">
+                        <Card title="Vidéo" subtitle="Envoyez le fichier de la vidéo sur le site, ou utilisez une vidéo déjà publiée sur YouTube.">
+                            <div className="btn-group mb-3" role="group" aria-label="Source de la vidéo">
+                                <Button variant={isFile ? 'primary' : 'outline-secondary'} onClick={() => setData('source', 'file')} aria-pressed={isFile}>
+                                    <i className="bi bi-upload me-1" />Fichier vidéo
+                                </Button>
+                                <Button variant={!isFile ? 'primary' : 'outline-secondary'} onClick={() => setData('source', 'youtube')} aria-pressed={!isFile}>
+                                    <i className="bi bi-youtube me-1" />Lien YouTube
+                                </Button>
+                            </div>
+                            {errors.source && <div className="text-danger small mb-2">{errors.source}</div>}
+
+                            {isFile ? (
+                                <>
+                                    <VideoFileField
+                                        current={video?.source === 'file' ? video : null}
+                                        maxMb={videoMaxMb}
+                                        errors={errors}
+                                        onUploaded={(id) => setData('upload_id', id ?? '')}
+                                        onPoster={(poster, duration) => setData((d) => ({ ...d, poster, duration: duration ?? d.duration }))}
+                                        onVertical={(vertical) => setData('is_vertical', vertical)}
+                                        onBusyChange={setUploading}
+                                    />
+                                    <Form.Check
+                                        className="mt-3"
+                                        type="switch"
+                                        id="v-vertical-file"
+                                        checked={data.is_vertical}
+                                        onChange={(e) => setData('is_vertical', e.target.checked)}
+                                        label="Format vertical (détecté automatiquement)"
+                                    />
+                                </>
+                            ) : (
+                            <>
                             <Form.Group controlId="v-url">
                                 <Form.Label className="small fw-medium">Lien YouTube <span className="text-danger">*</span></Form.Label>
                                 <Form.Control
@@ -89,7 +143,7 @@ function VideoForm({ video, categories, collections, products, timezone }) {
                                     placeholder="https://youtube.com/shorts/… ou https://youtu.be/…"
                                     isInvalid={!!errors.youtube_url || (data.youtube_url !== '' && !parsed)}
                                     isValid={!!parsed && !errors.youtube_url}
-                                    autoFocus={!isEdit}
+                                    autoFocus={!isEdit && !isFile}
                                 />
                                 <Form.Control.Feedback type="invalid">
                                     {errors.youtube_url ?? "Lien non reconnu. Sur YouTube : bouton « Partager », puis « Copier le lien »."}
@@ -105,7 +159,7 @@ function VideoForm({ video, categories, collections, products, timezone }) {
                                         style={{ width: '10rem', aspectRatio: '16 / 9', objectFit: 'cover' }}
                                     />
                                     <div className="small">
-                                        <div className="text-success mb-2"><i className="bi bi-check-circle me-1" />Vidéo reconnue</div>
+                                        <div className="text-success mb-2"><i className="bi bi-check-circle me-1" />Vidéo YouTube reconnue</div>
                                         <Form.Check
                                             type="switch"
                                             id="v-vertical"
@@ -116,6 +170,8 @@ function VideoForm({ video, categories, collections, products, timezone }) {
                                         <div className="text-muted-brand mt-1">Détermine la forme du lecteur sur le site.</div>
                                     </div>
                                 </div>
+                            )}
+                            </>
                             )}
                         </Card>
 
@@ -235,17 +291,22 @@ function VideoForm({ video, categories, collections, products, timezone }) {
                         </Card>
 
                         <div className="admin-card p-3 d-grid gap-2">
-                            <Button type="submit" disabled={processing || !parsed}>
+                            <Button type="submit" disabled={processing || !canSubmit}>
                                 {processing && <Spinner size="sm" className="me-2" />}
                                 {isEdit ? 'Enregistrer les modifications' : 'Ajouter la vidéo'}
                             </Button>
+                            {isFile && uploading && <div className="small text-muted-brand text-center">Attendez la fin de l'envoi de la vidéo…</div>}
+                            {isFile && !uploading && !hasFile && <div className="small text-muted-brand text-center">Choisissez d'abord le fichier vidéo.</div>}
+                            {form.progress && <div className="small text-muted-brand text-center">Enregistrement… {form.progress.percentage} %</div>}
                             <Link href={route('admin.videos.index')} className="btn btn-link link-body-emphasis btn-sm">Retour à la liste</Link>
                             {isEdit && (
                                 <DeleteButton
                                     href={route('admin.videos.destroy', video.id)}
                                     className="btn btn-outline-danger btn-sm"
                                     title={`Retirer « ${video.title} » du site ?`}
-                                    message="La vidéo n'apparaîtra plus sur le site. Elle reste sur votre chaîne YouTube."
+                                    message={video.source === 'file'
+                                        ? 'Le fichier vidéo et son image d\'aperçu seront supprimés définitivement du serveur.'
+                                        : 'La vidéo n\'apparaîtra plus sur le site. Elle reste sur votre chaîne YouTube.'}
                                     confirmLabel="Retirer"
                                 >
                                     <i className="bi bi-trash3 me-1" />Retirer la vidéo du site

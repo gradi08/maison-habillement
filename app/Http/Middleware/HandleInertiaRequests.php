@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Category;
 use App\Models\Setting;
+use App\Support\PhpLimits;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -41,29 +42,11 @@ class HandleInertiaRequests extends Middleware
                 ? []
                 : Category::active()->roots()->orderBy('position')->get(['name', 'slug']),
             // Taille maximale d'une requête (php.ini `post_max_size`) : l'admin découpe les envois de photos en conséquence.
-            'uploadLimit' => fn () => $request->routeIs('admin.*') ? self::iniBytes(ini_get('post_max_size')) : null,
+            'uploadLimit' => fn () => $request->routeIs('admin.*') ? PhpLimits::postMaxBytes() : null,
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
         ];
-    }
-
-    /** "8M" → 8388608 ; 0 ou vide = illimité (renvoie null). */
-    private static function iniBytes(string|false $value): ?int
-    {
-        $value = trim((string) $value);
-        if ($value === '' || $value === '0') {
-            return null;
-        }
-
-        $number = (int) $value;
-
-        return match (strtolower(substr($value, -1))) {
-            'g' => $number * 1024 ** 3,
-            'm' => $number * 1024 ** 2,
-            'k' => $number * 1024,
-            default => $number,
-        };
     }
 }
