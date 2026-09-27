@@ -21,12 +21,15 @@ done
 step() { printf '\n\033[1;36m==> %s\033[0m\n' "$1"; }
 
 # --- Vérifications ------------------------------------------------------------
+# Lignes de réglage du .env, sans les commentaires.
+settings() { grep -v '^[[:space:]]*#' .env; }
+
 if [ ! -f .env ]; then
     echo "ERREUR : fichier .env absent. Faites d'abord : cp .env.production.example .env  puis  nano .env"
     exit 1
 fi
 
-if grep -q "VOTRE-COMPTE\|<utilisateur de la base>\|<mot de passe de la base>" .env; then
+if settings | grep -q "VOTRE-COMPTE\|<utilisateur de la base>\|<mot de passe de la base>"; then
     echo "ERREUR : le .env contient encore des valeurs à remplacer (VOTRE-COMPTE, <...>). Ouvrez-le avec : nano .env"
     exit 1
 fi
@@ -53,7 +56,7 @@ composer clear-cache --quiet || true
 php artisan optimize:clear >/dev/null
 
 if $FIRST; then
-    if grep -q "<votre e-mail>\|<mot de passe de 12" .env; then
+    if settings | grep -q "<votre e-mail>\|<mot de passe de 12"; then
         echo "ERREUR : renseignez ADMIN_EMAIL et ADMIN_PASSWORD dans le .env avant la première installation (nano .env)."
         exit 1
     fi

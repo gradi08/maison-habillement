@@ -1,4 +1,4 @@
-# Prépare le fichier à envoyer sur l'hébergeur : franck-arnault-deploy.zip
+﻿# Prépare le fichier à envoyer sur l'hébergeur : franck-arnault-deploy.zip
 #
 # Utilisation (PowerShell, dans le dossier du projet) :
 #   powershell -ExecutionPolicy Bypass -File scripts\package.ps1
