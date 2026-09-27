@@ -16,14 +16,14 @@ export default function PublicLayout({ children }) {
                 Aller au contenu
             </a>
 
-            <Navbar expand="lg" sticky="top" className="site-nav py-2" collapseOnSelect>
+            <Navbar expand="xl" sticky="top" className="site-nav py-2" collapseOnSelect>
                 <Container>
                     <Navbar.Brand as={Link} href={route('home')} className="brand-gold">
                         {appName}
                     </Navbar.Brand>
                     <Navbar.Toggle aria-controls="site-menu" aria-label="Ouvrir le menu" />
                     <Navbar.Collapse id="site-menu">
-                        <Nav className="me-auto ms-lg-4">
+                        <Nav className="me-auto ms-xl-4">
                             <Nav.Link as={Link} href={route('products.index')} active={url === '/catalogue'}>
                                 Catalogue
                             </Nav.Link>
@@ -32,11 +32,14 @@ export default function PublicLayout({ children }) {
                                     key={c.slug}
                                     as={Link}
                                     href={route('products.index', { category: c.slug })}
-                                    active={url.includes(`category=${c.slug}`)}
+                                    active={url.startsWith('/catalogue') && url.includes(`category=${c.slug}`)}
                                 >
                                     {c.name}
                                 </Nav.Link>
                             ))}
+                            <Nav.Link as={Link} href={route('videos.index')} active={isActive('/videos')}>
+                                <i className="bi bi-play-circle me-1" aria-hidden="true" />Vidéos
+                            </Nav.Link>
                         </Nav>
                         <Nav>
                             <Nav.Link as={Link} href={route('about')} active={isActive('/a-propos')}>À propos</Nav.Link>

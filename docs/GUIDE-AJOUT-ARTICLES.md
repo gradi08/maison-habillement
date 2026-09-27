@@ -10,7 +10,8 @@ Il suit l'ordre dans lequel il faut travailler :
 5. [Créer l'article](#5-créer-un-article-champ-par-champ), champ par champ
 6. [Vérifier la fiche](#6-vérifier-larticle-sur-le-site)
 7. [Faire vivre le catalogue](#7-faire-vivre-le-catalogue-au-quotidien) : stock, prix, photos, suppression
-8. [Liste de contrôle](#8-liste-de-contrôle-avant-de-publier) et [erreurs fréquentes](#9-erreurs-fréquentes)
+8. [Ajouter des vidéos](#8-ajouter-des-vidéos) : présenter les vêtements en mouvement
+9. [Liste de contrôle](#9-liste-de-contrôle-avant-de-publier) et [erreurs fréquentes](#10-erreurs-fréquentes)
 
 > Pour remplir le site d'un coup avec 12 articles d'exemple, voir plutôt `docs/CATALOGUE.md` (une commande).
 > Ce guide-ci sert à ajouter **tes propres** articles.
@@ -70,7 +71,7 @@ Menu **Collections** → bouton **Nouvelle collection**.
 | **Description** | 1 à 2 phrases d'ambiance | Elle s'affiche sous le titre, sur l'accueil et en tête de la page de la collection. Au-delà de 2 phrases, le texte déborde sur la photo sur téléphone. |
 | **Slug** | Laisser vide | Même raison que pour les catégories. L'adresse devient `/catalogue?collection=heritage`. |
 | **Date de lancement** | Vide pour une publication immédiate, ou une date future | La collection reste **invisible jusqu'à cette date**. Tu peux ainsi tout préparer en avance et la faire apparaître le jour J, sans y penser. |
-| **Image de couverture** | Une photo **horizontale** (paysage), idéalement 1600 × 900 px, 2 Mo maximum | Elle sert de fond plein écran sur l'accueil. Une photo verticale serait fortement recadrée. Choisis une image dont la partie gauche est sombre ou calme : le texte blanc s'y superpose. |
+| **Image de couverture** | Une photo **horizontale** (paysage), idéalement 1600 × 900 px (une photo lourde est réduite automatiquement) | Elle sert de fond plein écran sur l'accueil. Une photo verticale serait fortement recadrée. Choisis une image dont la partie gauche est sombre ou calme : le texte blanc s'y superpose. |
 | **Mettre en avant sur l'accueil** | Coché pour la collection du moment | L'accueil montre jusqu'à 3 collections mises en avant. La **première** (voir « Ordre d'affichage ») devient la grande image du haut. |
 | **Visible sur le site** | Coché | Décoche-le pour retirer une ancienne collection sans supprimer ses articles. |
 | **Ordre d'affichage** | `0` pour la collection principale | L'ordre décide quelle collection occupe la grande image de l'accueil. |
@@ -83,21 +84,26 @@ Clique sur **Enregistrer**.
 
 ## 4. Préparer les photos avant de commencer
 
-C'est l'étape qui fait le plus la différence sur un site de mode. Prépare les photos **avant** d'ouvrir le formulaire.
+C'est l'étape qui fait le plus la différence sur un site de mode.
+
+> **Bonne nouvelle : tu peux envoyer les photos telles qu'elles sortent du téléphone** (même 10 ou 15 Mo).
+> Avant l'envoi, le site les **réduit automatiquement** dans ton navigateur : 1600 px maximum et format WebP, soit environ 300 Ko chacune.
+> Un message vert confirme l'opération, par exemple « 3 photos optimisées automatiquement : 24,6 Mo → 0,9 Mo ».
+> → **Pourquoi** : l'hébergement gratuit n'a que 100 Mo en tout, et le serveur refuse les photos de plus de 2 Mo. Une fois réduites, tu peux stocker environ 300 photos, et elles s'affichent vite sur téléphone. À l'écran, la différence de qualité est invisible.
+>
+> Ce qui compte donc surtout, c'est **le cadrage et la qualité de la prise de vue** :
 
 | Règle | Valeur conseillée | Pourquoi |
 |---|---|---|
 | **Format** | Portrait **4:5**, par exemple **1200 × 1500 px** | Toutes les vignettes du catalogue et la galerie sont affichées en 4:5. Une photo carrée ou horizontale est recadrée automatiquement, et le haut ou le bas du vêtement peut être coupé. |
-| **Poids** | **Moins de 500 Ko** par photo (2 Mo maximum, refusé au-delà) | Le site refuse au-delà de 2 Mo. Surtout, l'hébergement gratuit n'a que 100 Mo en tout : à 400 Ko par photo, tu peux en stocker environ 150. Des photos légères chargent aussi plus vite sur téléphone, et les clients restent. |
-| **Type de fichier** | **WebP** (sinon JPG ; PNG seulement pour un fond transparent) | Le WebP est 25 à 35 % plus léger que le JPG, pour la même qualité. Les autres formats (HEIC d'iPhone, PDF…) sont refusés. |
+| **Poids** | Aucune préparation (jusqu'à 40 Mo par photo) | Le site réduit tout seul. Au-delà de 40 Mo, même un téléphone récent peine à ouvrir l'image : la photo est refusée avec un message. |
+| **Type de fichier** | JPG, PNG, WebP, ou photo de téléphone | Tout est converti en WebP, 25 à 35 % plus léger que le JPG. Les PDF, vidéos et autres fichiers sont refusés. |
 | **Nombre** | **3 à 5** par article | La galerie est faite pour ça : vue de face, de dos, un détail (matière, bouton, couture), et l'article porté. Une seule photo ne suffit pas pour décider d'un achat. |
 | **Première photo** | La plus parlante, sur fond clair et uni | Elle devient la **vignette du catalogue** et la première image vue sur la fiche. Elle doit montrer l'article en entier. |
 | **Nom du fichier** | Peu importe | Le site renomme chaque fichier avec un nom aléatoire, pour qu'on ne puisse pas deviner les autres photos du serveur. |
 
-**Outil gratuit pour redimensionner et convertir** : <https://squoosh.app>.
-Glisse la photo, choisis **WebP**, qualité **75**, puis **Resize**, largeur **1200**, et télécharge. Tout se fait dans le navigateur : les photos ne sont pas envoyées ailleurs.
-
-**Photos depuis un iPhone** : dans Réglages › Appareil photo › Formats, choisis **« Le plus compatible »**, sinon les photos sont en HEIC et seront refusées.
+**Photos d'iPhone (format HEIC)** : elles sont acceptées si tu utilises **Safari**. Chrome et Firefox ne savent pas les ouvrir et afficheraient un message. La solution la plus simple, une fois pour toutes : sur l'iPhone, Réglages › Appareil photo › Formats › **« Le plus compatible »**.
+→ **Pourquoi** : HEIC est un format propre à Apple. En « Le plus compatible », l'iPhone enregistre en JPG, que tous les navigateurs savent lire.
 
 ---
 
@@ -159,7 +165,9 @@ Le mannequin mesure 1,75 m et porte une taille S.
 
 Ce qui peut s'afficher :
 
-- **Un fichier refusé** (format ou poids) apparaît dans un encadré jaune. Les autres sont gardés.
+- **« Optimisation des photos… »** s'affiche quelques secondes dans la zone de dépôt, puis un message vert indique le gain (« 3 photos optimisées automatiquement : 24,6 Mo → 0,9 Mo »).
+  → **Pourquoi** : les photos lourdes sont réduites dans ton navigateur avant l'envoi. Attends la fin avant d'en ajouter d'autres.
+- **Un fichier refusé** (PDF, vidéo, photo HEIC hors Safari, image endommagée) apparaît dans un encadré jaune. Les autres sont gardés.
   → **Pourquoi** : le site vérifie tout de suite, avant l'envoi, pour ne pas te faire perdre le formulaire.
 - **« Les photos pèsent X Mo au total, mais le serveur accepte Y Mo par envoi »** : lors de la **création**, toutes les photos partent avec le formulaire, en une seule fois, et le serveur limite la taille de cet envoi.
   → **Solution** : garde 2 ou 3 photos, crée l'article, puis ajoute les autres depuis la page de modification. Là, le site les envoie par petits paquets automatiquement.
@@ -301,7 +309,88 @@ Dans **Produits**, la barre **Rechercher par nom ou référence** filtre la list
 
 ---
 
-## 8. Liste de contrôle avant de publier
+## 8. Ajouter des vidéos
+
+Le menu **Vidéos** du site montre de courtes vidéos où la boutique présente ses vêtements. Les visiteurs peuvent les **filtrer** par catégorie ou collection, lire leur **description**, et ouvrir directement les **articles présentés**. Chaque vidéo apparaît aussi sur la fiche des articles qu'elle montre, dans une section « En vidéo ».
+
+> **Pourquoi les vidéos sont sur YouTube et pas sur le site** : une vidéo de 30 secondes pèse 10 à 30 Mo. L'hébergement gratuit n'a que 100 Mo en tout, et refuse les envois de plus de quelques Mo.
+> YouTube héberge gratuitement et sans limite, et adapte la qualité à la connexion de chaque visiteur (4G, wifi…).
+> Sur le site, le lecteur YouTube ne se charge **qu'au clic** : la page reste rapide et rien n'est envoyé à YouTube tant que le visiteur ne lance pas la vidéo.
+
+### 8.1 Tourner la vidéo
+
+| Conseil | Pourquoi |
+|---|---|
+| Filme **à la verticale**, au téléphone | La majorité des visiteurs sont sur téléphone. Une vidéo verticale remplit l'écran, et c'est le format des Shorts YouTube, des Reels Instagram et de TikTok : la même vidéo sert partout. |
+| **15 à 60 secondes** | Assez pour montrer la coupe, le tombé et un détail. Au-delà, la plupart des visiteurs décrochent. |
+| Lumière du jour, fond simple | Les couleurs du vêtement restent fidèles, ce qui évite les déceptions et les retours. |
+| Montre ce qu'une photo ne montre pas | Le tissu qui bouge, la démarche, un tour sur soi, un gros plan sur la matière. C'est la raison d'être de la vidéo. |
+| Musique : uniquement celle de la **bibliothèque audio YouTube** | Une musique commerciale peut faire bloquer la vidéo, ou empêcher son affichage sur les autres sites, dont le tien. |
+
+### 8.2 Publier la vidéo sur YouTube
+
+1. **Action** : sur l'application YouTube, bouton **+** → **Créer un Short**, ou **Importer une vidéo**.
+2. **Action** : choisis la visibilité **Publique**, ou **Non répertoriée**.
+   → **Pourquoi** : « Non répertoriée » cache la vidéo des recherches YouTube, mais elle reste lisible sur ton site. Pratique si tu ne veux pas animer une chaîne. **« Privée » ne fonctionne pas** : la vidéo serait illisible sur le site.
+3. **Action** : laisse activée l'option **« Autoriser l'intégration »** (activée par défaut, dans les options avancées).
+   → **Pourquoi** : sans elle, YouTube refuse que la vidéo soit lue sur un autre site que YouTube.
+4. **Action** : une fois la vidéo en ligne, bouton **Partager** → **Copier le lien**.
+
+### 8.3 Ajouter la vidéo sur le site
+
+Menu **Vidéos** → bouton **Nouvelle vidéo**.
+
+**Lien YouTube \***
+**Action** : colle le lien copié à l'étape précédente.
+→ **Pourquoi** : le site en extrait l'identifiant de la vidéo. Tous les formats de lien sont acceptés (`youtube.com/shorts/…`, `youtu.be/…`, `youtube.com/watch?v=…`). Si le lien est bon, l'**aperçu** de la vidéo et « ✓ Vidéo reconnue » s'affichent aussitôt. Sinon, le champ passe en rouge.
+
+**Format vertical**
+**Action** : vérifie l'interrupteur. Il se coche tout seul pour un lien de Short.
+→ **Pourquoi** : il décide de la forme du lecteur sur le site, haut et étroit ou large. Une vidéo filmée à la verticale affichée en format horizontal aurait de grandes bandes noires. Coche-le aussi pour une vidéo verticale importée normalement (lien en `watch?v=`).
+
+**Titre \***
+**Action** : un titre court qui dit ce qu'on voit, par exemple « La robe Amani portée » ou « Nouvelle collection Héritage ».
+→ **Pourquoi** : il s'affiche sous la vignette, en haut de la page de la vidéo, dans l'onglet du navigateur et dans les résultats Google. Il forme aussi l'adresse de la page : `/videos/la-robe-amani-portee`.
+
+**Description**
+**Action** : 2 à 4 lignes : ce que montre la vidéo, la matière, la taille portée, la collection.
+→ **Pourquoi** : elle s'affiche sous le lecteur, et en extrait sur la vignette de la liste. La **première ligne** sert aussi de résumé pour Google. Les retours à la ligne sont conservés.
+
+**Catégorie** et **Collection**
+**Action** : choisis la catégorie (Femme, Homme…) et, si la vidéo présente une saison, la collection.
+→ **Pourquoi** : ce sont les **filtres** de la page Vidéos. Un filtre n'apparaît pour les visiteurs que s'il contient au moins une vidéo en ligne : aucun bouton ne mène à une page vide.
+
+**Adresse de la page (slug)**
+**Action** : laisse vide.
+→ **Pourquoi** : même raison que pour les articles. L'adresse est générée à partir du titre et ne change plus, pour que les liens partagés restent valables.
+
+**Articles présentés dans la vidéo**
+**Action** : tape le nom ou la référence dans la recherche, puis clique sur un article pour l'ajouter. Range-les avec les flèches ↑ ↓ dans l'ordre d'apparition dans la vidéo. Retire-en un avec **×**.
+→ **Pourquoi** :
+- sous la vidéo, le visiteur voit ces articles et peut ouvrir leur fiche pour commander **sans chercher** ;
+- la vidéo s'affiche aussi sur la fiche de chacun de ces articles (« En vidéo ») ;
+- un article en **brouillon** peut être associé, mais il reste caché aux visiteurs tant qu'il n'est pas publié ;
+- 12 articles au maximum par vidéo, pour que la sélection reste lisible.
+
+**Publication**
+- **Visible sur le site** : décoché, la vidéo est un brouillon, invisible.
+- **Programmer la publication** : choisis une date et une heure pour qu'elle apparaisse automatiquement à ce moment, par exemple le jour du lancement d'une collection.
+  → **Pourquoi** : tu prépares tout en avance. L'heure suit le **fuseau horaire du serveur**, indiqué sous le champ. Il se règle avec `APP_TIMEZONE` dans le fichier `.env` du serveur (par exemple `Europe/Paris` ou `Africa/Kinshasa`).
+- **Ordre d'affichage** : `0` = en premier. À égalité, les plus récentes passent devant.
+  → **Pourquoi** : pour épingler en tête la vidéo phare, sans qu'elle soit dépassée par les suivantes.
+
+**Action** : clique sur **Ajouter la vidéo**. Le bouton reste grisé tant que le lien YouTube n'est pas reconnu.
+
+### 8.4 Vérifier et gérer
+
+- **Voir sur le site** (en haut de la page de modification) : lance la vidéo, vérifie le format, la description et les articles présentés.
+- La liste **Vidéos** de l'admin affiche l'état de chaque vidéo : **En ligne**, **Brouillon**, ou **Programmée**. Survole ce dernier badge pour voir la date.
+- **Retirer la vidéo du site** : confirme dans la fenêtre. La vidéo disparaît du site, mais **reste sur ta chaîne YouTube**.
+  → **Pourquoi** : le site ne fait qu'afficher la vidéo, il ne la possède pas. Pour la supprimer définitivement, fais-le aussi dans YouTube Studio.
+
+---
+
+## 9. Liste de contrôle avant de publier
 
 - [ ] Photos au format portrait, moins de 500 Ko, 3 à 5 par article, la meilleure en premier
 - [ ] Nom clair (type de vêtement + nom), 40 caractères maximum
@@ -317,7 +406,7 @@ Dans **Produits**, la barre **Rechercher par nom ou référence** filtre la list
 
 ---
 
-## 9. Erreurs fréquentes
+## 10. Erreurs fréquentes
 
 | Message ou problème | Cause | Solution |
 |---|---|---|
@@ -325,7 +414,8 @@ Dans **Produits**, la barre **Rechercher par nom ou référence** filtre la list
 | Erreur sur **Référence** ou **Slug** (déjà utilisé) | Un autre article porte la même valeur | Change la référence ; laisse le slug vide |
 | « Chaque combinaison taille / couleur doit être unique » | Deux lignes identiques (même `M` / `Noir`, majuscules comprises) | Supprime le doublon |
 | Erreur sur **Stock** | Stock vide ou négatif | Mets `0` ou plus sur chaque ligne |
-| Photo refusée | Format HEIC/PDF ou plus de 2 Mo | Convertis-la en WebP ou JPG avec <https://squoosh.app> |
+| Photo refusée « format non accepté » | PDF, vidéo ou autre fichier qui n'est pas une photo | Envoie une photo JPG, PNG ou WebP |
+| Photo refusée « ce navigateur ne sait pas ouvrir les photos HEIC » | Photo d'iPhone envoyée depuis Chrome ou Firefox | Utilise Safari, ou règle l'iPhone sur « Le plus compatible » (section 4) |
 | « Les photos pèsent X Mo au total… » | Trop de photos lourdes en une fois à la création | Crée l'article avec 2 ou 3 photos, puis ajoute le reste en modification |
 | « Un produit doit conserver au moins une photo » | Tentative de supprimer la dernière photo | Ajoute d'abord la nouvelle, puis supprime l'ancienne |
 | L'article n'apparaît pas sur le site | « Visible sur le site » décoché | Coche-le et enregistre |
@@ -335,4 +425,8 @@ Dans **Produits**, la barre **Rechercher par nom ou référence** filtre la list
 | Le prix ne s'affiche pas | Réglage global « prix masqués », sans exception sur l'article | Réglages › Affichage des prix, ou l'interrupteur de l'article |
 | Bouton WhatsApp grisé « bientôt disponible » | Numéro WhatsApp absent | Réglages › Commandes WhatsApp |
 | Le bloc « Coups de cœur » de l'accueil est vide | Aucun article mis en avant | Coche « Mettre en avant » sur 3 ou 4 articles |
+| « Lien non reconnu » sur une vidéo | Lien d'une autre plateforme, ou lien incomplet | Sur YouTube : **Partager** → **Copier le lien**, puis colle-le tel quel |
+| La vidéo affiche « Vidéo non disponible » sur le site | Vidéo en **Privée**, intégration désactivée, ou musique protégée | Section 8.2 : visibilité Publique ou Non répertoriée, « Autoriser l'intégration » activé, musique de la bibliothèque YouTube |
+| La vidéo a de grandes bandes noires | Réglage « Format vertical » incorrect | Coche ou décoche **Format vertical** selon le sens de la vidéo |
+| La vidéo programmée n'apparaît pas à l'heure prévue | Fuseau horaire du serveur différent du tien | Règle `APP_TIMEZONE` dans le `.env` du serveur, puis `php artisan optimize` |
 | La grande image de l'accueil est vide | Aucune collection mise en avant, ou collection sans image de couverture | Section 3 : coche « Mettre en avant sur l'accueil » et ajoute une couverture |

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\CollectionResource;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\VideoResource;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Product;
@@ -63,6 +64,8 @@ class ProductController extends Controller
         return Inertia::render('ProductPage', [
             'product' => new ProductResource($product),
             'related' => ProductResource::collection($related),
+            // Vidéos où l'article est présenté (section « En vidéo » de la fiche).
+            'videos' => VideoResource::collection($product->videos()->published()->ordered()->take(3)->get()),
         ]);
     }
 

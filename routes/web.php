@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\VideoController;
 use Illuminate\Support\Facades\Route;
 
 /* -------------------------------------------------------------- Site public */
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', HomeController::class)->name('home');
 Route::get('/catalogue', [ProductController::class, 'index'])->name('products.index');
 Route::get('/produits/{product:slug}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/videos', [VideoController::class, 'index'])->name('videos.index');
+Route::get('/videos/{video:slug}', [VideoController::class, 'show'])->name('videos.show');
 Route::get('/a-propos', [PageController::class, 'about'])->name('about');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 
@@ -38,6 +41,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::resource('categories', Admin\CategoryController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('collections', Admin\CollectionController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('videos', Admin\VideoController::class)->except('show');
 
     Route::get('settings', [Admin\SettingController::class, 'edit'])->name('settings.edit');
     Route::put('settings', [Admin\SettingController::class, 'update'])->name('settings.update');

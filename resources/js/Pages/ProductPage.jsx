@@ -4,6 +4,7 @@ import { Container } from 'react-bootstrap';
 import OrderButton from '@/Components/OrderButton';
 import ProductCard from '@/Components/ProductCard';
 import ProductGallery from '@/Components/ProductGallery';
+import VideoCard from '@/Components/VideoCard';
 import VariantSelector from '@/Components/VariantSelector';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { formatPrice } from '@/lib/format';
@@ -16,7 +17,7 @@ export default function ProductPage(props) {
     return <ProductDetails key={props.product.id} {...props} />;
 }
 
-function ProductDetails({ product, related }) {
+function ProductDetails({ product, related, videos = [] }) {
     const { settings } = usePage().props;
     const sizes = product.sizes ?? [];
     const colors = product.colors ?? [];
@@ -122,6 +123,19 @@ function ProductDetails({ product, related }) {
                         </div>
                     </div>
                 </div>
+
+                {videos.length > 0 && (
+                    <section className="mt-5 pt-lg-4" aria-labelledby="videos-title">
+                        <h2 id="videos-title" className="h3 mb-4">
+                            <i className="bi bi-play-circle me-2" aria-hidden="true" />En vidéo
+                        </h2>
+                        <div className="row g-3 g-lg-4 row-cols-2 row-cols-lg-4">
+                            {videos.map((v) => (
+                                <div key={v.id} className="col"><VideoCard video={v} /></div>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 {related.length > 0 && (
                     <section className="mt-5 pt-lg-4" aria-labelledby="related-title">

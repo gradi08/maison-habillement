@@ -16,9 +16,15 @@ trait HasSlug
     {
         static::saving(function (Model $model) {
             if (blank($model->slug)) {
-                $model->slug = static::uniqueSlug($model->name, $model->getKey());
+                $model->slug = static::uniqueSlug((string) $model->{$model->slugSource()}, $model->getKey());
             }
         });
+    }
+
+    /** Colonne à partir de laquelle le slug est fabriqué (surchargée par Video : `title`). */
+    public function slugSource(): string
+    {
+        return 'name';
     }
 
     public static function uniqueSlug(string $value, int|string|null $ignoreId = null): string

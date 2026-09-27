@@ -16,7 +16,7 @@ Guide utilisateur de l'admin (ajout d'articles) : `docs/GUIDE-AJOUT-ARTICLES.md`
 ```bash
 php artisan serve --port=8010          # le port 8000 est pris par un autre projet (gmailauto)
 npm run dev                            # ou npm run build
-php artisan test                       # 78 tests, SQLite en mémoire
+php artisan test                       # 95 tests, SQLite en mémoire
 DB_CONNECTION=mysql DB_DATABASE=maison_habillement_test php artisan test   # mêmes tests sur MySQL
 php artisan migrate:fresh --seed       # ⚠ efface la base ; admin + catalogue de démo (APP_ENV=local)
 ```
@@ -31,6 +31,7 @@ php artisan migrate:fresh --seed       # ⚠ efface la base ; admin + catalogue 
 - `Category` : 2 niveaux maximum (`parent_id` doit être une racine) ; le filtre « Femme » inclut ses sous-catégories
 - `Setting` : clé/valeur mis en cache (`Setting::get/bool/set`), valeurs par défaut créées **dans la migration**
 - `users.role` : enum `UserRole` (admin / customer), **jamais** dans `$fillable`
+- `Video` : vidéo **YouTube** (seul `youtube_id` est stocké, jamais de fichier vidéo sur le serveur : quota 100 Mo). `belongsTo` Category/Collection (filtres, `nullOnDelete`), `belongsToMany` Product via `product_video` (colonne `position`). Scope `published()` = `is_published` + `published_at` passé (publication programmée, fuseau `APP_TIMEZONE`).
 
 ## Règles à ne pas casser
 
@@ -41,6 +42,10 @@ php artisan migrate:fresh --seed       # ⚠ efface la base ; admin + catalogue 
 - Les fichiers images sont supprimés via les **événements Eloquent** (`Product::deleting`, `ProductImage::deleted`), pas par la cascade SQL. Ne pas utiliser `WithoutModelEvents` dans les seeders (casse aussi les slugs).
 - Les slugs (`HasSlug`) ne sont générés que s'ils sont vides : ils ne changent pas quand le nom change, pour ne pas casser les liens partagés sur WhatsApp.
 - `ProductImageController` refuse de supprimer la dernière photo d'un produit ; route avec `scopeBindings()`.
+- **Photos réduites dans le navigateur avant l'envoi** (`lib/imageCompress.js` : 1600 px, WebP, repli JPEG). La règle serveur `max:2048` reste la barrière qui fait foi. Toute nouvelle zone d'upload doit passer par `prepareImages()`.
+- **Liens YouTube** : la règle qui fait foi est `Video::parseYoutube()` (PHP). `lib/youtube.js` en est la copie côté navigateur pour l'aperçu instantané : modifier les deux ensemble (tests dans `tests/Feature/VideoTest.php`).
+- **Lecteur vidéo « à la demande »** (`Components/VideoPlayer.jsx`) : seule la miniature est chargée ; l'iframe `youtube-nocookie.com` n'est créée qu'au clic. Ne pas intégrer d'iframe YouTube directement dans une page.
+- `HasSlug` fabrique le slug depuis `slugSource()` (`name` par défaut, `title` pour `Video`).
 
 ## Pièges connus
 
@@ -64,6 +69,8 @@ php artisan migrate:fresh --seed       # ⚠ efface la base ; admin + catalogue 
 | Modale de confirmation (`useConfirm()`) + bouton suppression | `Components/ConfirmDialog.jsx`, `Components/Admin/DeleteButton.jsx` |
 | Formulaire produit admin | `Pages/Admin/Products/Form.jsx` (+ `Components/Admin/*`) |
 | Axios + intercepteurs (messages d'erreur en français) | `lib/http.js` |
+| Réduction automatique des photos avant envoi | `lib/imageCompress.js` (utilisé par `ImageManager`, `Products/Form`, `Collections/Index`) |
+| Vidéos : lecteur, vignette, pages publiques, admin | `Components/VideoPlayer.jsx`, `Components/VideoCard.jsx`, `Pages/Videos/*`, `Pages/Admin/Videos/*`, `lib/youtube.js` |
 | Thème (variables CSS en tête) | `resources/css/app.css` |
 
 Conventions : pas de `window.confirm` (utiliser `useConfirm`), textes en français, `fetchPriority="high"` uniquement sur l'image LCP, `loading="lazy"` ailleurs.

@@ -9,6 +9,7 @@ const NAV = [
     { route: 'admin.products.index', match: 'admin.products.*', icon: 'bi-bag', label: 'Produits' },
     { route: 'admin.categories.index', match: 'admin.categories.*', icon: 'bi-diagram-3', label: 'Catégories' },
     { route: 'admin.collections.index', match: 'admin.collections.*', icon: 'bi-collection', label: 'Collections' },
+    { route: 'admin.videos.index', match: 'admin.videos.*', icon: 'bi-camera-video', label: 'Vidéos' },
     { route: 'admin.settings.edit', match: 'admin.settings.*', icon: 'bi-sliders', label: 'Réglages' },
 ];
 

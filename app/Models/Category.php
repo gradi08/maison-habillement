@@ -45,6 +45,11 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function videos(): HasMany
+    {
+        return $this->hasMany(Video::class);
+    }
+
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
