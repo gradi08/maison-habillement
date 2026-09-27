@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { Alert, ProgressBar } from 'react-bootstrap';
 import { useConfirm } from '@/Components/ConfirmDialog';
 import http from '@/lib/http';
-import ImageDropzone, { checkFiles, splitIntoBatches } from './ImageDropzone';
+import { optimizedSummary, prepareImages } from '@/lib/imageCompress';
+import ImageDropzone, { splitIntoBatches } from './ImageDropzone';
 import SortableImageGrid from './SortableImageGrid';
 
 /**
@@ -20,6 +21,8 @@ export default function ImageManager({ productId, initialImages }) {
     const [progress, setProgress] = useState(null);
     const [errors, setErrors] = useState([]);
     const [saved, setSaved] = useState(false);
+    const [optimizing, setOptimizing] = useState(false);
+    const [info, setInfo] = useState(null);
 
     const flashSaved = () => {
         setSaved(true);
@@ -27,8 +30,10 @@ export default function ImageManager({ productId, initialImages }) {
     };
 
     const upload = async (files) => {
-        const { accepted, rejected } = checkFiles(files);
+        setOptimizing(true);
+        const { accepted, rejected, optimized } = await prepareImages(files).finally(() => setOptimizing(false));
         setErrors(rejected);
+        setInfo(optimizedSummary(optimized));
         if (accepted.length === 0) return;
 
         // Plusieurs requêtes si besoin, pour rester sous la limite post_max_size du serveur.
@@ -121,7 +126,8 @@ export default function ImageManager({ productId, initialImages }) {
 
             {progress !== null && <ProgressBar now={progress} label={`${progress} %`} animated aria-label="Envoi des photos" />}
 
-            <ImageDropzone onFiles={upload} disabled={busy} />
+            <ImageDropzone onFiles={upload} disabled={busy} processing={optimizing} />
+            {info && <div className="small text-success"><i className="bi bi-magic me-1" />{info}</div>}
 
             {errors.length > 0 && (
                 <Alert variant="danger" className="mb-0 small" onClose={() => setErrors([])} dismissible>

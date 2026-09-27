@@ -2,12 +2,13 @@ import { Link, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
 import { Alert, Button, Form, InputGroup, Spinner } from 'react-bootstrap';
 import DeleteButton from '@/Components/Admin/DeleteButton';
-import ImageDropzone,{ checkFiles, formatBytes, usableUploadBytes } from '@/Components/Admin/ImageDropzone';
+import ImageDropzone, { usableUploadBytes } from '@/Components/Admin/ImageDropzone';
 import ImageManager from '@/Components/Admin/ImageManager';
 import PriceVisibilityControl from '@/Components/Admin/PriceVisibilityControl';
 import SortableImageGrid from '@/Components/Admin/SortableImageGrid';
 import VariantsEditor, { newVariant } from '@/Components/Admin/VariantsEditor';
 import AdminLayout from '@/Layouts/AdminLayout';
+import { formatMb, optimizedSummary, prepareImages } from '@/lib/imageCompress';
 
 /**
  * Création et édition d'un produit (même composant).
@@ -177,7 +178,7 @@ function ProductForm({ product, categories, collections, globalShowPrices }) {
                                     <NewImagesField files={data.images} onChange={(files) => setData('images', files)} />
                                     {imagesTooHeavy && (
                                         <Alert variant="warning" className="small mt-3 mb-0">
-                                            Les photos pèsent {formatBytes(imagesBytes)} au total, mais le serveur accepte {formatBytes(maxBytes)} par envoi.
+                                            Les photos pèsent {formatMb(imagesBytes)} au total, mais le serveur accepte {formatMb(maxBytes)} par envoi.
                                             Gardez 2 ou 3 photos pour créer le produit : vous ajouterez les autres juste après, depuis la page d'édition.
                                         </Alert>
                                     )}
@@ -252,6 +253,8 @@ function ProductForm({ product, categories, collections, globalShowPrices }) {
 /** Photos d'un nouveau produit : aperçus locaux, tri par glisser-déposer, envoyées avec le formulaire. */
 function NewImagesField({ files, onChange }) {
     const [rejected, setRejected] = useState([]);
+    const [info, setInfo] = useState(null);
+    const [processing, setProcessing] = useState(false);
 
     // Un aperçu (URL blob) par fichier, libéré quand il n'est plus affiché.
     const items = useMemo(
@@ -260,11 +263,17 @@ function NewImagesField({ files, onChange }) {
     );
     useEffect(() => () => items.forEach((i) => URL.revokeObjectURL(i.url)), [items]);
 
-    const add = (list) => {
-        const { accepted, rejected: refused } = checkFiles(list);
-        setRejected(refused);
-        const known = new Set(items.map((i) => i.id));
-        onChange([...files, ...accepted.filter((f) => !known.has(`${f.name}-${f.size}-${f.lastModified}`))]);
+    const add = async (list) => {
+        setProcessing(true);
+        try {
+            const { accepted, rejected: refused, optimized } = await prepareImages(list);
+            setRejected(refused);
+            setInfo(optimizedSummary(optimized));
+            const known = new Set(items.map((i) => i.id));
+            onChange([...files, ...accepted.filter((f) => !known.has(`${f.name}-${f.size}-${f.lastModified}`))]);
+        } finally {
+            setProcessing(false);
+        }
     };
 
     return (
@@ -276,7 +285,12 @@ function NewImagesField({ files, onChange }) {
                     onRemove={(item) => onChange(files.filter((f) => f !== item.file))}
                 />
             )}
-            <ImageDropzone onFiles={add} hint="Au moins une photo · JPG, PNG ou WebP · 2 Mo maximum par photo" />
+            <ImageDropzone
+                onFiles={add}
+                processing={processing}
+                hint="Au moins une photo · JPG, PNG, WebP ou photos de téléphone, optimisées automatiquement"
+            />
+            {info && <div className="small text-success"><i className="bi bi-magic me-1" />{info}</div>}
             {rejected.length > 0 && (
                 <Alert variant="warning" className="small mb-0" dismissible onClose={() => setRejected([])}>
                     <ul className="mb-0 ps-3">{rejected.map((r) => <li key={r}>{r}</li>)}</ul>

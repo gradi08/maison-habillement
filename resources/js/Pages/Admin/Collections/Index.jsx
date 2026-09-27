@@ -2,7 +2,7 @@ import { useForm } from '@inertiajs/react';
 import DeleteButton from '@/Components/Admin/DeleteButton';
 import { useEffect, useMemo, useState } from 'react';
 import { Badge, Button, Form, Modal, Spinner } from 'react-bootstrap';
-import { checkFiles } from '@/Components/Admin/ImageDropzone';
+import { prepareImages } from '@/lib/imageCompress';
 import AdminLayout from '@/Layouts/AdminLayout';
 
 export default function CollectionsIndex({ collections }) {
@@ -58,6 +58,7 @@ export default function CollectionsIndex({ collections }) {
 function CollectionModal({ collection, onClose }) {
     const isEdit = Boolean(collection.id);
     const [fileError, setFileError] = useState(null);
+    const [optimizing, setOptimizing] = useState(false);
     const form = useForm({
         name: collection.name ?? '',
         slug: collection.slug ?? '',
@@ -132,15 +133,21 @@ function CollectionModal({ collection, onClose }) {
                                 <Form.Control
                                     id="col-cover"
                                     type="file"
-                                    accept="image/jpeg,image/png,image/webp"
+                                    accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
                                     size="sm"
+                                    disabled={optimizing}
                                     isInvalid={!!(errors.cover || fileError)}
-                                    onChange={(e) => {
-                                        const { accepted, rejected } = checkFiles(e.target.files);
+                                    onChange={async (e) => {
+                                        const files = [...e.target.files];
+                                        setOptimizing(true);
+                                        // Couverture plein écran : on garde jusqu'à 2000 px de large.
+                                        const { accepted, rejected } = await prepareImages(files, { maxSide: 2000 })
+                                            .finally(() => setOptimizing(false));
                                         setFileError(rejected[0] ?? null);
                                         setData((d) => ({ ...d, cover: accepted[0] ?? null, remove_cover: false }));
                                     }}
                                 />
+                                {optimizing && <div className="small text-muted-brand mt-1"><Spinner size="sm" className="me-1" />Optimisation de l'image…</div>}
                                 <Form.Control.Feedback type="invalid">{fileError ?? errors.cover}</Form.Control.Feedback>
                                 {isEdit && collection.cover_url && !data.cover && (
                                     <Form.Check className="mt-2" id="col-remove-cover" label="Retirer l'image actuelle" checked={data.remove_cover} onChange={(e) => setData('remove_cover', e.target.checked)} />
