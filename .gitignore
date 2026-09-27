@@ -28,3 +28,6 @@ Thumbs.db
 
 # Configuration locale des outils (Claude Code)
 /.claude/
+
+# Paquet de mise en ligne généré par scripts/package.ps1
+/franck-arnault-deploy.zip
