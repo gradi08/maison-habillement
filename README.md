@@ -136,52 +136,15 @@ Pour une vraie boutique en production, un hébergement mutualisé payant d'envir
 
 ### Mise en ligne sur alwaysdata
 
-1. **Préparer en local** : lancez `npm run build`, qui crée `public/build`. Le serveur n'a pas besoin de Node.
+Le guide complet, pas à pas depuis la création du compte, est dans **[docs/HEBERGEMENT-ALWAYSDATA.md](docs/HEBERGEMENT-ALWAYSDATA.md)**. Il couvre aussi les mises à jour et le dépannage.
 
-2. **Envoyer le code** : le plus simple est un dépôt GitHub **privé**, cloné en SSH sur le serveur (`git clone …`). Vérifiez que `.env` n'est jamais envoyé sur GitHub (il est exclu par `.gitignore`). Comme `public/build` est aussi exclu par défaut, soit vous le retirez du `.gitignore`, soit vous l'envoyez à part par SFTP.
+Deux scripts font le travail :
 
-3. **Installer les dépendances sur le serveur** :
-   ```bash
-   composer install --no-dev --optimize-autoloader
-   cp .env.example .env
-   php artisan key:generate
-   ```
+| Script | Où le lancer | Rôle |
+|---|---|---|
+| `scripts/package.ps1` | Sur le PC (PowerShell) | Compile le front et crée `franck-arnault-deploy.zip` (code du dernier commit + `public/build`, jamais le `.env`) |
+| `scripts/deploy.sh` | Sur le serveur (SSH) | Vérifie le `.env` et PHP, installe les dépendances, migre la base, crée l'admin (`--premiere-installation`), ajoute la démo (`--demo`), optimise |
 
-4. **Adapter le `.env` du serveur** :
-   ```dotenv
-   APP_ENV=production
-   APP_DEBUG=false          # indispensable : sinon les erreurs affichent vos mots de passe
-   APP_URL=https://ton-nom.alwaysdata.net
-   SESSION_SECURE_COOKIE=true
+Modèle de configuration pour le serveur : `.env.production.example`.
 
-   DB_HOST=…                # accès de la base créée dans l'interface alwaysdata
-   DB_DATABASE=…
-   DB_USERNAME=…
-   DB_PASSWORD=…
-
-   ADMIN_EMAIL=…
-   ADMIN_PASSWORD=…         # à vider juste après l'étape 5
-   ```
-
-5. **Initialiser la base et le site** :
-   ```bash
-   php artisan migrate --force
-   php artisan db:seed --class=AdminUserSeeder --force
-   php artisan storage:link
-   php artisan optimize
-   ```
-   Videz ensuite `ADMIN_PASSWORD` dans le `.env`.
-
-   Pour avoir aussi le catalogue de démo en ligne (environ 5 Mo de photos) : `php artisan db:seed --class=DemoCatalogSeeder --force`. Il n'est pas lancé automatiquement en production.
-
-6. **Configurer le site dans l'interface alwaysdata** : faites pointer le site vers le dossier **`public/`** du projet, et non vers sa racine. Sinon le fichier `.env` serait lisible depuis internet.
-
-7. **Réglages** : connectez-vous sur `/login`, puis renseignez le numéro WhatsApp et les autres réglages dans Admin › Réglages.
-
-**Mettre à jour le site plus tard** : en local, `npm run build` (et envoyez `public/build`) ; sur le serveur :
-```bash
-git pull
-composer install --no-dev --optimize-autoloader
-php artisan migrate --force
-php artisan optimize
-```
+**Important** : l'offre gratuite d'alwaysdata est réservée à un usage **personnel, non lucratif**. Elle suffit pour tester et montrer le site. Pour la boutique qui vend réellement, prévoyez une offre payante.

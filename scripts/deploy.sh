@@ -53,7 +53,9 @@ composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 composer clear-cache --quiet || true
 
 # Un cache de configuration d'une installation précédente empêcherait de relire le .env (et donc ADMIN_*).
-php artisan optimize:clear >/dev/null
+# (config:clear et non optimize:clear : ce dernier vide aussi le cache en base, dont la table
+#  n'existe pas encore lors de la première installation.)
+php artisan config:clear >/dev/null
 
 if $FIRST; then
     if settings | grep -q "<votre e-mail>\|<mot de passe de 12"; then
