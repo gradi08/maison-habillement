@@ -57,6 +57,14 @@ h1, h2, h3, .display-font {
     .brand-gold.on-dark { background-image: var(--brand-gold-light-gradient); }
 }
 .brand-gold:hover, .brand-gold:focus { filter: brightness(1.1); }
+/* Nom cliquable (triple clic = accès admin) : pas de sélection du texte au triple clic,
+   et pas de zoom « double tape » sur mobile qui avalerait les tapes. */
+.brand-link {
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
 /* Permet à un enfant flex de rétrécir (sinon text-truncate ne tronque pas et la page déborde). */
 .min-w-0 { min-width: 0; }
 .bg-sand { background: var(--brand-sand); }

@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { Container, Nav, Navbar } from 'react-bootstrap';
+import BrandLink from '@/Components/BrandLink';
 import SocialLinks from '@/Components/SocialLinks';
 import { buildWhatsAppUrl } from '@/lib/whatsapp';
 import { APP_NAME as appName } from '@/lib/brand';
@@ -18,9 +19,7 @@ export default function PublicLayout({ children }) {
 
             <Navbar expand="xl" sticky="top" className="site-nav py-2" collapseOnSelect>
                 <Container>
-                    <Navbar.Brand as={Link} href={route('home')} className="brand-gold">
-                        {appName}
-                    </Navbar.Brand>
+                    <Navbar.Brand as={BrandLink} />
                     <Navbar.Toggle aria-controls="site-menu" aria-label="Ouvrir le menu" />
                     <Navbar.Collapse id="site-menu">
                         <Nav className="me-auto ms-xl-4">
@@ -62,7 +61,7 @@ export default function PublicLayout({ children }) {
                 <Container>
                     <div className="row g-4">
                         <div className="col-md-5">
-                            <div className="brand-gold fs-3 mb-2">{appName}</div>
+                            <BrandLink className="d-inline-block fs-3 mb-2" />
                             {settings.about_text && (
                                 <p className="text-muted-brand small mb-3" style={{ maxWidth: '28rem' }}>
                                     {settings.about_text.length > 180
