@@ -30,4 +30,24 @@ class CategoryRequest extends FormRequest
             'is_active' => ['boolean'],
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nom',
+            'slug' => 'slug',
+            'parent_id' => 'catégorie parente',
+            'description' => 'description',
+            'position' => 'ordre',
+            'is_active' => 'visible sur le site',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'parent_id.exists' => 'La catégorie parente doit être une catégorie principale (2 niveaux maximum).',
+            'parent_id.not_in' => 'Une catégorie ne peut pas être sa propre catégorie parente.',
+        ];
+    }
 }

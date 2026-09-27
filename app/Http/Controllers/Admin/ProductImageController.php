@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Actions\StoreProductImages;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ReorderProductImagesRequest;
+use App\Http\Requests\Admin\StoreProductRequest;
 use App\Http\Resources\ProductImageResource;
 use App\Models\Product;
 use App\Models\ProductImage;
@@ -26,7 +27,7 @@ class ProductImageController extends Controller
         $request->validate([
             'images' => ['required', 'array', 'min:1', 'max:12'],
             'images.*' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-        ]);
+        ], StoreProductRequest::photoMessages(), ['images' => 'photos', 'images.*' => 'photo']);
 
         $storeImages->handle($product, $request->file('images'));
 

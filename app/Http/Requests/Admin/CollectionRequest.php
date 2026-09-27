@@ -29,4 +29,27 @@ class CollectionRequest extends FormRequest
             'published_at' => ['nullable', 'date'],
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nom',
+            'slug' => 'slug',
+            'season' => 'saison',
+            'description' => 'description',
+            'cover' => 'image de couverture',
+            'is_featured' => 'mise en avant',
+            'is_active' => 'visible sur le site',
+            'position' => 'ordre d\'affichage',
+            'published_at' => 'date de lancement',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'cover.mimes' => 'Format d\'image non accepté : utilisez JPG, PNG ou WebP.',
+            'cover.max' => 'L\'image de couverture doit peser 2 Mo maximum.',
+        ];
+    }
 }

@@ -70,11 +70,41 @@ class StoreProductRequest extends FormRequest
             'category_id' => 'catégorie',
             'collection_id' => 'collection',
             'name' => 'nom',
+            'slug' => 'adresse de la fiche',
+            'reference' => 'référence',
+            'description' => 'description',
             'price' => 'prix',
+            'price_visibility' => 'affichage du prix',
+            'is_published' => 'visible sur le site',
+            'is_featured' => 'mise en avant',
             'variants' => 'variantes',
+            'variants.*.size' => 'taille',
+            'variants.*.color' => 'couleur',
+            'variants.*.color_hex' => 'pastille de couleur',
             'variants.*.stock' => 'stock',
+            'variants.*.sku' => 'SKU',
             'images' => 'photos',
             'images.*' => 'photo',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return self::photoMessages();
+    }
+
+    /** Messages des photos, partagés avec l'ajout de photos en édition (ProductImageController). */
+    public static function photoMessages(): array
+    {
+        return [
+            'images.required' => 'Ajoutez au moins une photo.',
+            'images.max' => 'Envoyez :max photos au maximum à la fois.',
+            'images.*.image' => 'Ce fichier n\'est pas une image.',
+            'images.*.mimes' => 'Format de photo non accepté : utilisez JPG, PNG ou WebP.',
+            'images.*.max' => 'Chaque photo doit peser 2 Mo maximum.',
+            'variants.*.color_hex.regex' => 'La pastille de couleur doit être un code du type #1A1A1A.',
+            'variants.*.sku.unique' => 'Ce SKU est déjà utilisé par un autre article.',
+            'variants.*.sku.distinct' => 'Deux lignes ont le même SKU.',
         ];
     }
 

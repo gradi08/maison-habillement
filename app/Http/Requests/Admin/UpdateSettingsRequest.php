@@ -42,6 +42,23 @@ class UpdateSettingsRequest extends FormRequest
         ];
     }
 
+    public function attributes(): array
+    {
+        return [
+            'show_prices_globally' => 'affichage des prix',
+            'currency' => 'devise',
+            'whatsapp_number' => 'numéro WhatsApp',
+            'whatsapp_message_template' => 'modèle du message',
+            'contact_email' => 'e-mail',
+            'contact_phone' => 'téléphone',
+            'contact_address' => 'adresse',
+            'about_text' => 'texte « À propos »',
+            'instagram_url' => 'lien Instagram',
+            'facebook_url' => 'lien Facebook',
+            'tiktok_url' => 'lien TikTok',
+        ];
+    }
+
     public function messages(): array
     {
         return [
