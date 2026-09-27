@@ -15,63 +15,45 @@ use Illuminate\Support\Str;
 use Throwable;
 
 /**
- * Catalogue de démonstration illustré de photos libres de droits (Unsplash ; auteurs dans
- * data/demo-photos.json), téléchargées au premier seed puis gardées en cache (disque `local`, dossier demo-photos).
- * Sans connexion internet, des images unies sont générées localement à la place.
- * À ne pas lancer en production.
+ * Catalogue de départ : 3 catégories, 2 collections, 12 articles.
+ *
+ * Source unique des données : database/seeders/data/catalogue.json
+ * (présentation lisible générée à partir de ce fichier : docs/CATALOGUE.md).
+ * Photos libres de droits (Unsplash ; auteurs dans data/demo-photos.json), téléchargées au premier
+ * seed puis gardées en cache (disque `local`, dossier demo-photos). Sans internet : images unies générées.
+ *
+ * Peut être lancé en production (php artisan db:seed --class=DemoCatalogSeeder --force) :
+ * ce qui existe déjà (même slug) n'est ni dupliqué ni modifié, et les réglages ne sont pas touchés.
  */
 class DemoCatalogSeeder extends Seeder
 {
-    private const SIZES_CLOTHES = ['XS', 'S', 'M', 'L', 'XL'];
-
-    private const SIZES_SHOES = ['38', '39', '40', '41', '42'];
-
-    private const COLORS = [
-        'Noir' => '#1A1A1A',
-        'Blanc cassé' => '#F4F1EA',
-        'Beige sable' => '#D8C3A5',
-        'Bleu nuit' => '#1F2A44',
-        'Terracotta' => '#C0643F',
-        'Vert olive' => '#6B7045',
-    ];
-
     public function run(): void
     {
-        $tree = [
-            'Femme' => ['Robes', 'Hauts', 'Pantalons'],
-            'Homme' => ['Chemises', 'Pantalons homme', 'Vestes'],
-            'Accessoires' => ['Sacs', 'Chaussures'],
-        ];
-
-        $leaves = [];
-        foreach (array_keys($tree) as $i => $rootName) {
-            $root = Category::firstOrCreate(['name' => $rootName], ['position' => $i]);
-            foreach ($tree[$rootName] as $j => $childName) {
-                $leaves[$childName] = Category::firstOrCreate(
-                    ['name' => $childName],
-                    ['parent_id' => $root->id, 'position' => $j],
-                );
-            }
-        }
-
-        $collections = [
-            Collection::firstOrCreate(['name' => 'Héritage'], [
-                'season' => 'Printemps-Été 2026',
-                'description' => 'Coupes amples, lin et coton, inspirées des ateliers de couture traditionnels.',
-                'is_featured' => true,
-                'position' => 0,
-            ]),
-            Collection::firstOrCreate(['name' => 'Nocturne'], [
-                'season' => 'Automne-Hiver 2026',
-                'description' => 'Tons profonds et matières structurées pour la saison froide.',
-                'is_featured' => true,
-                'position' => 1,
-            ]),
-        ];
-
+        $data = json_decode(file_get_contents(database_path('seeders/data/catalogue.json')), true, flags: JSON_THROW_ON_ERROR);
         $photos = $this->photoCatalog();
 
-        foreach ($collections as $collection) {
+        $categories = [];
+        foreach ($data['categories'] as $c) {
+            $categories[$c['slug']] = Category::firstOrCreate(
+                ['slug' => $c['slug']],
+                ['name' => $c['name'], 'position' => $c['position'], 'description' => $c['description'], 'is_active' => true],
+            );
+        }
+
+        $collections = [];
+        foreach ($data['collections'] as $c) {
+            $collection = Collection::firstOrCreate(
+                ['slug' => $c['slug']],
+                [
+                    'name' => $c['name'],
+                    'season' => $c['season'],
+                    'description' => $c['description'],
+                    'is_featured' => $c['is_featured'],
+                    'is_active' => true,
+                    'position' => $c['position'],
+                ],
+            );
+
             if (! $collection->cover_image) {
                 $photo = $photos['@collection:'.$collection->name][0] ?? null;
                 $collection->update([
@@ -79,86 +61,71 @@ class DemoCatalogSeeder extends Seeder
                         ?? $this->placeholder('collections', $collection->name, '#2B2B2B', 1600, 900),
                 ]);
             }
+
+            $collections[$c['slug']] = $collection;
         }
 
-        $catalog = [
-            ['Robe longue Amani', 'Robes', 0, self::SIZES_CLOTHES, 89],
-            ['Robe portefeuille Zola', 'Robes', 1, self::SIZES_CLOTHES, 75],
-            ['Blouse en lin Nia', 'Hauts', 0, self::SIZES_CLOTHES, 45],
-            ['Top côtelé Imani', 'Hauts', 1, self::SIZES_CLOTHES, 29],
-            ['Pantalon large Safi', 'Pantalons', 0, self::SIZES_CLOTHES, 65],
-            ['Chemise col mao Kofi', 'Chemises', 0, self::SIZES_CLOTHES, 55],
-            ['Chemise oxford Jabari', 'Chemises', 1, self::SIZES_CLOTHES, 49],
-            ['Chino ajusté Tano', 'Pantalons homme', 1, self::SIZES_CLOTHES, 59],
-            ['Veste workwear Baraka', 'Vestes', 1, self::SIZES_CLOTHES, 129],
-            ['Sac cabas en cuir Lulu', 'Sacs', 0, [], 110],
-            ['Pochette brodée Asha', 'Sacs', null, [], 39],
-            ['Mocassins Duma', 'Chaussures', 1, self::SIZES_SHOES, 95],
-        ];
+        foreach ($data['products'] as $p) {
+            if (Product::where('slug', $p['slug'])->exists()) {
+                $this->command?->line("Déjà présent, ignoré : {$p['name']}");
 
-        foreach ($catalog as $index => [$name, $categoryName, $collectionIndex, $sizes, $price]) {
-            if (Product::where('name', $name)->exists()) {
                 continue;
             }
 
             $product = Product::create([
-                'category_id' => $leaves[$categoryName]->id,
-                'collection_id' => $collectionIndex !== null ? $collections[$collectionIndex]->id : null,
-                'name' => $name,
-                'reference' => 'FA-'.str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
-                'description' => "{$name} : pièce confectionnée dans notre atelier.\nMatière douce, finitions soignées.\nEntretien : lavage à 30 °C.",
-                'price' => $price,
+                'category_id' => $categories[$p['category']]->id,
+                'collection_id' => $p['collection'] ? $collections[$p['collection']]->id : null,
+                'name' => $p['name'],
+                'slug' => $p['slug'],
+                'reference' => $p['reference'],
+                'description' => $p['description'],
+                'price' => $p['price'],
                 'is_published' => true,
-                'is_featured' => $index % 4 === 0,
+                'is_featured' => $p['is_featured'],
             ]);
 
-            $colors = array_slice(self::COLORS, $index % 3, 2, true);
-
-            // Le 3e produit est entièrement en rupture, pour voir l'état "rupture" sur le site.
-            $outOfStock = $index === 2;
-
-            if ($sizes === []) {
-                foreach ($colors as $color => $hex) {
-                    $product->variants()->create(['color' => $color, 'color_hex' => $hex, 'stock' => $outOfStock ? 0 : rand(1, 8)]);
-                }
-            } else {
-                foreach ($sizes as $size) {
-                    foreach ($colors as $color => $hex) {
-                        $product->variants()->create([
-                            'size' => $size,
-                            'color' => $color,
-                            'color_hex' => $hex,
-                            'stock' => $outOfStock ? 0 : rand(0, 6),
-                        ]);
-                    }
+            // Une variante par taille × couleur (ou par couleur pour un article sans taille).
+            foreach ($p['sizes'] ?: [null] as $size) {
+                foreach ($p['colors'] as $color) {
+                    $product->variants()->create([
+                        'size' => $size,
+                        'color' => $color['name'],
+                        'color_hex' => $color['hex'],
+                        'stock' => $p['stock_per_variant'],
+                    ]);
                 }
             }
 
             // Vraies photos (Unsplash) si disponibles, sinon images unies générées localement.
-            $paths = collect($photos[$name] ?? [])
+            $paths = collect($photos[$p['name']] ?? [])
                 ->map(fn (array $photo) => $this->downloadPhoto($photo, "products/{$product->id}", 1000, 1250))
                 ->filter()
                 ->values();
 
             if ($paths->isEmpty()) {
-                $paths = collect(array_values($colors))->map(
-                    fn (string $hex, int $i) => $this->placeholder("products/{$product->id}", "{$name} – vue ".($i + 1), $hex, 1000, 1250)
+                $paths = collect($p['colors'])->map(
+                    fn (array $color, int $i) => $this->placeholder("products/{$product->id}", "{$p['name']} – vue ".($i + 1), $color['hex'], 1000, 1250)
                 );
             }
 
             foreach ($paths as $order => $path) {
                 $product->images()->create([
                     'path' => $path,
-                    'alt' => "{$name} – photo ".($order + 1),
+                    'alt' => "{$p['name']} – photo ".($order + 1),
                     'order' => $order,
                 ]);
             }
+
+            $this->command?->info("Ajouté : {$p['name']} ({$paths->count()} photos)");
         }
 
-        // Pour la démo : prix visibles et un numéro WhatsApp fictif.
-        Setting::set('show_prices_globally', true);
-        if (blank(Setting::get('whatsapp_number'))) {
-            Setting::set('whatsapp_number', '33600000000');
+        // En local uniquement : prix visibles et numéro WhatsApp fictif pour tester.
+        // Jamais en ligne, pour ne pas écraser les vrais réglages de la boutique.
+        if (app()->isLocal()) {
+            Setting::set('show_prices_globally', true);
+            if (blank(Setting::get('whatsapp_number'))) {
+                Setting::set('whatsapp_number', '33600000000');
+            }
         }
     }
 

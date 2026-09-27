@@ -69,4 +69,8 @@ Conventions : pas de `window.confirm` (utiliser `useConfirm`), textes en frança
 
 ## Données de démo
 
-`DemoCatalogSeeder` : 11 catégories, 2 collections, 12 produits, 35 photos **Unsplash** (licence libre, auteurs dans `database/seeders/data/demo-photos.json`, photos Unsplash+ exclues). Cache dans `storage/app/private/demo-photos` ; repli sur des images générées (GD) sans internet. Lancé automatiquement seulement si `APP_ENV=local`.
+`DemoCatalogSeeder` = catalogue de départ : 3 catégories (sans sous-catégorie), 2 collections, 12 articles.
+- Données : `database/seeders/data/catalogue.json` (**source unique**). `docs/CATALOGUE.md` en est généré : `node scripts/catalogue-doc.mjs` après chaque modification du JSON.
+- Utilisable en production (`php artisan db:seed --class=DemoCatalogSeeder --force`) : idempotent par slug, et ne modifie les réglages (prix visibles, WhatsApp fictif) qu'en local.
+- 35 photos **Unsplash** (licence libre, auteurs dans `database/seeders/data/demo-photos.json`, photos Unsplash+ exclues, clés = nom de l'article). Cache dans `storage/app/private/demo-photos` ; repli sur des images générées (GD) sans internet.
+- Lancé automatiquement par `db:seed` seulement si `APP_ENV=local`.

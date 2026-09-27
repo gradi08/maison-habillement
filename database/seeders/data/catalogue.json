@@ -1,0 +1,199 @@
+{
+    "categories": [
+        {
+            "name": "Femme",
+            "slug": "femme",
+            "position": 0,
+            "description": "Prêt-à-porter féminin : robes, hauts et pantalons aux coupes fluides, en matières naturelles."
+        },
+        {
+            "name": "Homme",
+            "slug": "homme",
+            "position": 1,
+            "description": "Chemises, pantalons et vestes aux lignes nettes, pensés pour durer."
+        },
+        {
+            "name": "Accessoires",
+            "slug": "accessoires",
+            "position": 2,
+            "description": "Sacs, pochettes et chaussures en cuir pour compléter chaque tenue."
+        }
+    ],
+    "collections": [
+        {
+            "name": "Héritage",
+            "slug": "heritage",
+            "season": "Printemps-Été 2026",
+            "position": 0,
+            "is_featured": true,
+            "description": "Coupes amples, lin et coton, inspirées des ateliers de couture traditionnels. Une garde-robe légère pour les beaux jours."
+        },
+        {
+            "name": "Nocturne",
+            "slug": "nocturne",
+            "season": "Automne-Hiver 2026",
+            "position": 1,
+            "is_featured": true,
+            "description": "Tons profonds et matières structurées pour la saison froide : des pièces qui passent du jour au soir."
+        }
+    ],
+    "products": [
+        {
+            "name": "Robe longue Amani",
+            "slug": "robe-longue-amani",
+            "reference": "FA-F001",
+            "category": "femme",
+            "collection": "heritage",
+            "price": 89,
+            "is_featured": true,
+            "sizes": ["XS", "S", "M", "L", "XL"],
+            "colors": [{ "name": "Beige sable", "hex": "#D8C3A5" }, { "name": "Blanc cassé", "hex": "#F4F1EA" }],
+            "stock_per_variant": 3,
+            "description": "Robe longue en lin lavé, encolure en V boutonnée et ceinture à nouer. Coupe ample qui descend jusqu'aux chevilles.\nMatière : 100 % lin.\nEntretien : lavage à 30 °C, repassage au fer doux."
+        },
+        {
+            "name": "Robe portefeuille Zola",
+            "slug": "robe-portefeuille-zola",
+            "reference": "FA-F002",
+            "category": "femme",
+            "collection": "nocturne",
+            "price": 75,
+            "is_featured": false,
+            "sizes": ["XS", "S", "M", "L", "XL"],
+            "colors": [{ "name": "Terracotta", "hex": "#C0643F" }, { "name": "Noir", "hex": "#1A1A1A" }],
+            "stock_per_variant": 4,
+            "description": "Robe portefeuille à manches longues, décolleté croisé et lien à la taille. Longueur midi, tombé fluide.\nMatière : viscose.\nEntretien : lavage à 30 °C, séchage à plat."
+        },
+        {
+            "name": "Blouse en lin Nia",
+            "slug": "blouse-en-lin-nia",
+            "reference": "FA-F003",
+            "category": "femme",
+            "collection": "heritage",
+            "price": 45,
+            "is_featured": false,
+            "sizes": ["XS", "S", "M", "L", "XL"],
+            "colors": [{ "name": "Blanc cassé", "hex": "#F4F1EA" }, { "name": "Bleu nuit", "hex": "#1F2A44" }],
+            "stock_per_variant": 0,
+            "note": "Volontairement en rupture de stock, pour voir l'affichage « Rupture » sur le site.",
+            "description": "Blouse légère en lin, col rond, manches trois-quarts et fente discrète au dos.\nMatière : 100 % lin.\nEntretien : lavage à 30 °C."
+        },
+        {
+            "name": "Top côtelé Imani",
+            "slug": "top-cotele-imani",
+            "reference": "FA-F004",
+            "category": "femme",
+            "collection": null,
+            "price": 29,
+            "is_featured": false,
+            "sizes": ["XS", "S", "M", "L", "XL"],
+            "colors": [{ "name": "Noir", "hex": "#1A1A1A" }, { "name": "Blanc cassé", "hex": "#F4F1EA" }],
+            "stock_per_variant": 6,
+            "description": "Top ajusté en maille côtelée, col rond et manches courtes. Le basique qui se porte avec tout.\nMatière : 95 % coton, 5 % élasthanne.\nEntretien : lavage à 30 °C."
+        },
+        {
+            "name": "Pantalon large Safi",
+            "slug": "pantalon-large-safi",
+            "reference": "FA-F005",
+            "category": "femme",
+            "collection": "heritage",
+            "price": 65,
+            "is_featured": false,
+            "sizes": ["XS", "S", "M", "L", "XL"],
+            "colors": [{ "name": "Beige sable", "hex": "#D8C3A5" }, { "name": "Vert olive", "hex": "#6B7045" }],
+            "stock_per_variant": 3,
+            "description": "Pantalon large taille haute, plis marqués et poches italiennes. Jambe fluide jusqu'au sol.\nMatière : lin et coton.\nEntretien : lavage à 30 °C."
+        },
+        {
+            "name": "Chemise col mao Kofi",
+            "slug": "chemise-col-mao-kofi",
+            "reference": "FA-H001",
+            "category": "homme",
+            "collection": "heritage",
+            "price": 55,
+            "is_featured": true,
+            "sizes": ["S", "M", "L", "XL", "XXL"],
+            "colors": [{ "name": "Blanc cassé", "hex": "#F4F1EA" }, { "name": "Bleu nuit", "hex": "#1F2A44" }],
+            "stock_per_variant": 4,
+            "description": "Chemise à col mao, patte de boutonnage cachée et coupe droite. Élégante sans cravate.\nMatière : lin et coton.\nEntretien : lavage à 40 °C."
+        },
+        {
+            "name": "Chemise oxford Jabari",
+            "slug": "chemise-oxford-jabari",
+            "reference": "FA-H002",
+            "category": "homme",
+            "collection": "nocturne",
+            "price": 49,
+            "is_featured": false,
+            "sizes": ["S", "M", "L", "XL", "XXL"],
+            "colors": [{ "name": "Bleu oxford", "hex": "#6D8EBF" }, { "name": "Blanc cassé", "hex": "#F4F1EA" }],
+            "stock_per_variant": 5,
+            "description": "Chemise en toile oxford, col boutonné et poche poitrine. Se porte ouverte ou rentrée.\nMatière : 100 % coton.\nEntretien : lavage à 40 °C."
+        },
+        {
+            "name": "Chino ajusté Tano",
+            "slug": "chino-ajuste-tano",
+            "reference": "FA-H003",
+            "category": "homme",
+            "collection": "nocturne",
+            "price": 59,
+            "is_featured": false,
+            "sizes": ["S", "M", "L", "XL", "XXL"],
+            "colors": [{ "name": "Beige sable", "hex": "#D8C3A5" }, { "name": "Noir", "hex": "#1A1A1A" }],
+            "stock_per_variant": 3,
+            "description": "Chino coupe ajustée, taille mi-haute et bas légèrement fuselé.\nMatière : coton stretch.\nEntretien : lavage à 30 °C, sur l'envers."
+        },
+        {
+            "name": "Veste workwear Baraka",
+            "slug": "veste-workwear-baraka",
+            "reference": "FA-H004",
+            "category": "homme",
+            "collection": "nocturne",
+            "price": 129,
+            "is_featured": true,
+            "sizes": ["S", "M", "L", "XL", "XXL"],
+            "colors": [{ "name": "Vert olive", "hex": "#6B7045" }, { "name": "Noir", "hex": "#1A1A1A" }],
+            "stock_per_variant": 2,
+            "description": "Veste de travail revisitée, quatre poches plaquées et boutons métal. Robuste et intemporelle.\nMatière : sergé de coton épais.\nEntretien : lavage à 30 °C."
+        },
+        {
+            "name": "Sac cabas en cuir Lulu",
+            "slug": "sac-cabas-en-cuir-lulu",
+            "reference": "FA-A001",
+            "category": "accessoires",
+            "collection": "heritage",
+            "price": 110,
+            "is_featured": true,
+            "sizes": [],
+            "colors": [{ "name": "Cognac", "hex": "#9A5B2E" }, { "name": "Noir", "hex": "#1A1A1A" }],
+            "stock_per_variant": 2,
+            "description": "Grand cabas en cuir pleine fleur, anses renforcées et poche intérieure zippée. Format A4.\nDimensions : 38 × 32 × 12 cm.\nEntretien : cire nourrissante pour cuir."
+        },
+        {
+            "name": "Pochette brodée Asha",
+            "slug": "pochette-brodee-asha",
+            "reference": "FA-A002",
+            "category": "accessoires",
+            "collection": null,
+            "price": 39,
+            "is_featured": false,
+            "sizes": [],
+            "colors": [{ "name": "Terracotta", "hex": "#C0643F" }, { "name": "Blanc cassé", "hex": "#F4F1EA" }],
+            "stock_per_variant": 5,
+            "description": "Pochette brodée à la main, fermeture zippée et doublure en coton. Se glisse dans un sac ou se porte seule.\nDimensions : 25 × 15 cm.\nEntretien : nettoyage délicat à la main."
+        },
+        {
+            "name": "Mocassins Duma",
+            "slug": "mocassins-duma",
+            "reference": "FA-A003",
+            "category": "accessoires",
+            "collection": "nocturne",
+            "price": 95,
+            "is_featured": false,
+            "sizes": ["39", "40", "41", "42", "43", "44"],
+            "colors": [{ "name": "Cognac", "hex": "#9A5B2E" }, { "name": "Noir", "hex": "#1A1A1A" }],
+            "stock_per_variant": 2,
+            "description": "Mocassins en cuir souple, semelle cousue et bride décorative. Chaussent normalement.\nMatière : cuir de vachette.\nEntretien : cirage régulier."
+        }
+    ]
+}
